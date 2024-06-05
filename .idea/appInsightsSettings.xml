@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.nishiket.converse" />
+                  <option name="mobileSdkAppId" value="1:884768104043:android:f2ad07cdb4a03ab6f99b2e" />
+                  <option name="projectId" value="converse-1e750" />
+                  <option name="projectNumber" value="884768104043" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
