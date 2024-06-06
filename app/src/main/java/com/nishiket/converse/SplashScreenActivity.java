@@ -27,7 +27,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        EdgeToEdge.enable(this); // for full screen
         binding = ActivitySplashScreenBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -35,13 +35,13 @@ public class SplashScreenActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Window window = getWindow();
-        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
+        Window window = getWindow(); // get os status bar and navigation bar and screen
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView()); // gets its view and controller
 
         if (windowInsetsController != null) {
-            windowInsetsController.setAppearanceLightStatusBars(false);
-            windowInsetsController.setAppearanceLightNavigationBars(false);
-            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars());
+            windowInsetsController.setAppearanceLightStatusBars(false); // set font color white
+            windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars()); // hide status bar and navigation bar
         }
         new Handler().postDelayed(new Runnable() {
             @Override

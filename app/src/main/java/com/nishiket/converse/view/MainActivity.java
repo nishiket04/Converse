@@ -37,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Window window = getWindow();
-        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
+        Window window = getWindow(); // get os status bar and navigation bar and screen
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView()); // gets its view and controller
 
         if (windowInsetsController != null) {
             windowInsetsController.setAppearanceLightStatusBars(false); // White font color on status bar
-            windowInsetsController.setAppearanceLightNavigationBars(false);
+            windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
         }
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();

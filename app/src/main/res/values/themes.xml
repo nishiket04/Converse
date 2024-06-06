@@ -2,14 +2,14 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Converse" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <item name="colorPrimaryDark">@color/background</item>
+        <item name="colorPrimaryDark">@color/background</item> // gives status bar color
         <item name="android:colorBackground">@color/background</item>
-        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowDisablePreview">true</item> // for fast launch
     </style>
 
     <style name="Theme.Converse" parent="Base.Theme.Converse" />
-    <style name="SplashTheme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_screen</item>
-        <item name="android:windowFullscreen">true</item>
+    <style name="SplashTheme" parent="Theme.Material3.DayNight.NoActionBar"> // launcher activity theme
+        <item name="android:windowBackground">@drawable/splash_screen</item> // its background
+        <item name="android:windowFullscreen">true</item> // removes status bar
     </style>
 </resources>
