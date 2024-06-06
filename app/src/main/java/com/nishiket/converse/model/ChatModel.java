@@ -1,6 +1,6 @@
 package com.nishiket.converse.model;
 
-public class chat {
+public class ChatModel {
     String image;
     String name;
     String lastMessage;
