@@ -14,6 +14,7 @@ dime = "1.1.1"
 navigationFragment = "2.7.7"
 navigationUi = "2.7.7"
 swiperefreshlayout = "1.1.0"
+circleimage = "3.1.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -29,6 +30,7 @@ dime = { group = "com.intuit.sdp", name = "sdp-android", version.ref = "dime"}
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout"}
+circleimage = { group = "de.hdodenhof", name = "circleimageview", version.ref="circleimage"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

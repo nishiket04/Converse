@@ -55,6 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:scrollbars="vertical"
+                tools:listitem="@layout/user_chat_ui"
                 android:layout_marginTop="14dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"

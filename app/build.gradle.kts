@@ -55,4 +55,5 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.dime)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.circleimage)
 }
