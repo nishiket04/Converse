@@ -1,4 +1,4 @@
-package com.nishiket.converse.view;
+package com.nishiket.converse.view.user;
 
 
 import android.os.Bundle;
@@ -12,6 +12,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.nishiket.converse.ChatApplication;
 import com.nishiket.converse.R;
@@ -44,13 +46,19 @@ public class MainActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightStatusBars(false); // White font color on status bar
             windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
         }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(binding.fragmentContainer.getId(), new HomeFragment());
+        fragmentTransaction.commit();
+
+
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
 //        mSocket.on(Socket.EVENT_CONNECT, args -> Log.d("SocketIO", "Connected"));
 //        mSocket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.d("SocketIO", "Connection Error: " + args[0]));
 //        mSocket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketIO", "Disconnected"));
         mSocket.connect();
-        binding.text.setText(""+mSocket.id());
         mSocket.on("chat message", onNewMessage);
         mSocket.on(Socket.EVENT_CONNECT, args -> {
             Log.d("SocketIO", "Connected");

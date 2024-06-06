@@ -12,4 +12,10 @@
         <item name="android:windowBackground">@drawable/splash_screen</item> // its background
         <item name="android:windowFullscreen">true</item> // removes status bar
     </style>
+    <style name="TitleBarTextAppearance" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/allerta</item>
+        <item name="android:textSize">@dimen/_18sdp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

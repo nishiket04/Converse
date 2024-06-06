@@ -1,26 +1,20 @@
 package com.nishiket.converse;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.Window;
-import android.view.WindowInsetsController;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import com.bumptech.glide.Glide;
 import com.nishiket.converse.databinding.ActivitySplashScreenBinding;
-import com.nishiket.converse.view.MainActivity;
+import com.nishiket.converse.view.user.MainActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
    private ActivitySplashScreenBinding binding;

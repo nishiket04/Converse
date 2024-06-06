@@ -5,4 +5,5 @@
     <color name="green">#25D366</color>
     <color name="background">#121B22</color>
     <color name="gray">#1D252B</color>
+    <color name="search_white">#F5ACACAC</color>
 </resources>
