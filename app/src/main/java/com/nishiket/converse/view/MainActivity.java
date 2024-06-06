@@ -3,12 +3,15 @@ package com.nishiket.converse.view;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.nishiket.converse.ChatApplication;
 import com.nishiket.converse.R;
@@ -34,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Window window = getWindow();
+        WindowInsetsControllerCompat windowInsetsController = WindowCompat.getInsetsController(window, window.getDecorView());
+
+        if (windowInsetsController != null) {
+            windowInsetsController.setAppearanceLightStatusBars(false); // White font color on status bar
+            windowInsetsController.setAppearanceLightNavigationBars(false);
+        }
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
 //        mSocket.on(Socket.EVENT_CONNECT, args -> Log.d("SocketIO", "Connected"));
