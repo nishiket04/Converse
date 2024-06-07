@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.nishiket.converse.databinding.ActivitySplashScreenBinding;
+import com.nishiket.converse.view.onboarding.OnBoardingActivity;
 import com.nishiket.converse.view.user.MainActivity;
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -40,10 +41,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent i = new Intent(SplashScreenActivity.this, MainActivity.class);
+                Intent i = new Intent(SplashScreenActivity.this, OnBoardingActivity.class);
                 startActivity(i);
                 finish();
             }
-        },5000);
+        },3000);
     }
 }

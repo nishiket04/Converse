@@ -47,10 +47,6 @@ public class MainActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(binding.fragmentContainer.getId(), new HomeFragment());
-        fragmentTransaction.commit();
 
 
         ChatApplication app = (ChatApplication) getApplication();
