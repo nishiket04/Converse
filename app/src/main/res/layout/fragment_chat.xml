@@ -102,40 +102,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-<!--    <LinearLayout-->
-<!--        android:id="@+id/sendLayout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:layout_marginLeft="6dp"-->
-<!--        android:layout_marginRight="6dp"-->
-<!--        android:layout_marginBottom="6dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent">-->
-
-<!--        <EditText-->
-<!--            android:id="@+id/sendEdt"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="@drawable/search_box"-->
-<!--            android:hint="Message"-->
-<!--            android:imeOptions="actionSend"-->
-<!--            android:layout_marginRight="6dp"-->
-<!--            android:textSize="@dimen/_13sdp"-->
-<!--            android:textColorHint="@color/search_white"-->
-<!--            android:paddingLeft="@dimen/_17sdp"-->
-<!--            android:paddingRight="@dimen/_2sdp"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textCursorDrawable="@color/white" />-->
-
-<!--        <com.google.android.material.button.MaterialButton-->
-<!--            android:id="@+id/sendBtn"-->
-<!--            android:layout_width="@dimen/_35sdp"-->
-<!--            android:layout_height="@dimen/_35sdp"-->
-<!--            android:background="@drawable/send_btn"-->
-<!--            app:backgroundTint="@null" />-->
-<!--    </LinearLayout>-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
