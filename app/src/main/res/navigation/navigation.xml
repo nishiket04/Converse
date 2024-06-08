@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_newChatFragment"
             app:destination="@id/newChatFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -39,6 +42,15 @@
         tools:layout="@layout/fragment_new_chat" >
         <action
             android:id="@+id/action_newChatFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatFragment"
+        android:name="com.nishiket.converse.view.user.ChatFragment"
+        android:label="fragment_chat"
+        tools:layout="@layout/fragment_chat" >
+        <action
+            android:id="@+id/action_chatFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

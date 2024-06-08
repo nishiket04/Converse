@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavAction;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
@@ -40,5 +42,12 @@ public class NewChatFragment extends Fragment {
         newChatBinding.users.setAdapter(chatAdapter);
         chatAdapter.setChatModelList(chatModelList);
         chatAdapter.notifyDataSetChanged();
+
+        newChatBinding.addGrp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(view).navigate(R.id.action_newChatFragment_to_chatFragment);
+            }
+        });
     }
 }
