@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/chat_bg_image"
     android:windowSoftInputMode="adjustResize|stateVisible"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.user.ChatFragment">
     <LinearLayout
         android:id="@+id/header"
+        android:background="@color/background"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_35sdp"
         android:orientation="horizontal"
@@ -30,6 +32,12 @@
             android:layout_marginLeft="@dimen/_10sdp"
             />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical"
+            >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,6 +47,16 @@
             android:text="Nishiket"
             android:textColor="@color/white"
             android:textSize="@dimen/_13sdp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="Online"
+            android:layout_marginLeft="@dimen/_10sdp"
+            android:textSize="@dimen/_10sdp"
+            />
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -53,14 +71,17 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="7dp"
+            >
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/users"
+                android:id="@+id/chats"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="4dp"
-                android:paddingBottom="40dp"
+                android:layout_marginRight="@dimen/_5sdp"
+                android:layout_marginLeft="@dimen/_5sdp"
                 android:scrollbars="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

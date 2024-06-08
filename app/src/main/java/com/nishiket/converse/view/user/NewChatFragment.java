@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavAction;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -14,9 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nishiket.converse.R;
-import com.nishiket.converse.adapter.ChatAdapter;
+import com.nishiket.converse.adapter.UserChatAdapter;
 import com.nishiket.converse.databinding.FragmentNewChatBinding;
-import com.nishiket.converse.model.ChatModel;
+import com.nishiket.converse.model.UserChatModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ import java.util.List;
 
 public class NewChatFragment extends Fragment {
     private FragmentNewChatBinding newChatBinding;
-    private List<ChatModel> chatModelList = new ArrayList<>();
+    private List<UserChatModel> userChatModelList = new ArrayList<>();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -37,11 +36,11 @@ public class NewChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        ChatAdapter chatAdapter = new ChatAdapter(getActivity());
+        UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
         newChatBinding.users.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        newChatBinding.users.setAdapter(chatAdapter);
-        chatAdapter.setChatModelList(chatModelList);
-        chatAdapter.notifyDataSetChanged();
+        newChatBinding.users.setAdapter(userChatAdapter);
+        userChatAdapter.setChatModelList(userChatModelList);
+        userChatAdapter.notifyDataSetChanged();
 
         newChatBinding.addGrp.setOnClickListener(new View.OnClickListener() {
             @Override

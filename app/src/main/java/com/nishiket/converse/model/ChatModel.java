@@ -1,31 +1,31 @@
 package com.nishiket.converse.model;
 
 public class ChatModel {
-    String image;
-    String name;
-    String lastMessage;
+    String message;
+    String time;
+    int type;
 
-    public String getImage() {
-        return image;
+    public String getMessage() {
+        return message;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String getName() {
-        return name;
+    public String getTime() {
+        return time;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTime(String time) {
+        this.time = time;
     }
 
-    public String getLastMessage() {
-        return lastMessage;
+    public int getType() {
+        return type;
     }
 
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
+    public void setType(int type) {
+        this.type = type;
     }
 }

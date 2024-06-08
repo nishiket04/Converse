@@ -8,17 +8,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.nishiket.converse.databinding.UserChatUiBinding;
+import com.nishiket.converse.databinding.SelfChatBinding;
+import com.nishiket.converse.databinding.UserChatBinding;
 import com.nishiket.converse.model.ChatModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewHolder> {
-    private List<ChatModel> chatModelList = new ArrayList<>();
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
-    private UserChatUiBinding binding;
+    private UserChatBinding userChatBinding;
+    private SelfChatBinding selfChatBinding;
+    private List<ChatModel> chatModelList = new ArrayList<>();
 
     public ChatAdapter(Context context) {
         this.context = context;
@@ -28,19 +29,31 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewHolder> {
         this.chatModelList = chatModelList;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return chatModelList.get(position).getType();
+    }
+
     @NonNull
     @Override
-    public ChatAdapter.viewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        binding = UserChatUiBinding.inflate(LayoutInflater.from(context), parent, false);
-        return new viewHolder(binding);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == 0) {
+            userChatBinding = UserChatBinding.inflate(LayoutInflater.from(context), parent, false);
+            return new UserChatViewHolder(userChatBinding);
+        } else {
+            selfChatBinding = SelfChatBinding.inflate(LayoutInflater.from(context), parent, false);
+            return new SelfChatViewHolder(selfChatBinding);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatAdapter.viewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         ChatModel chatModel = chatModelList.get(position);
-        binding.userName.setText(chatModel.getName());
-        binding.lastMessage.setText(chatModel.getLastMessage());
-        Glide.with(context).load(chatModel.getImage()).into(binding.userImage);
+        if (holder instanceof UserChatViewHolder) {
+            ((UserChatViewHolder) holder).bind(chatModel);
+        } else if (holder instanceof SelfChatViewHolder) {
+            ((SelfChatViewHolder) holder).bind(chatModel);
+        }
     }
 
     @Override
@@ -49,10 +62,38 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.viewHolder> {
     }
 
     public class viewHolder extends RecyclerView.ViewHolder {
-        private UserChatUiBinding binding;
-        public viewHolder(@NonNull UserChatUiBinding itemView) {
-            super(itemView.getRoot());
-            binding = itemView;
+        public viewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+
+    public class UserChatViewHolder extends RecyclerView.ViewHolder {
+        private final UserChatBinding binding;
+
+        public UserChatViewHolder(UserChatBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(ChatModel chatModel) {
+            // Bind data to the user chat layout
+            binding.message.setText(chatModel.getMessage());
+            binding.time.setText(chatModel.getTime());
+        }
+    }
+
+    public class SelfChatViewHolder extends RecyclerView.ViewHolder {
+        private final SelfChatBinding binding;
+
+        public SelfChatViewHolder(SelfChatBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind(ChatModel chatModel) {
+            // Bind data to the self chat layout
+            binding.message.setText(chatModel.getMessage());
+            binding.time.setText(chatModel.getTime());
         }
     }
 }
