@@ -19,6 +19,7 @@
             app:layout_scrollFlags="scroll|enterAlways"
             app:title="Converse"
             app:menu="@menu/menu"
+            android:paddingEnd="8dp"
             app:titleTextAppearance="@style/TitleBarTextAppearance"
             />
 
