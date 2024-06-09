@@ -45,7 +45,7 @@ public class NewChatFragment extends Fragment {
         newChatBinding.addGrp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Navigation.findNavController(view).navigate(R.id.action_newChatFragment_to_chatFragment);
+                Navigation.findNavController(view).navigate(R.id.action_newChatFragment_to_addGroupFragment);
             }
         });
     }
