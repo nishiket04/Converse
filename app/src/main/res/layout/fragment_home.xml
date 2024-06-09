@@ -18,6 +18,7 @@
             android:background="?attr/colorPrimaryDark"
             app:layout_scrollFlags="scroll|enterAlways"
             app:title="Converse"
+            app:menu="@menu/menu"
             app:titleTextAppearance="@style/TitleBarTextAppearance"
             />
 

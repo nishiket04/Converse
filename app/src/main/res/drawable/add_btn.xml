@@ -6,6 +6,6 @@
             <solid android:color="@color/green"/>
         </shape>
     </item>
-    <item android:drawable="@drawable/add" android:gravity="center" android:width="@dimen/_25sdp" android:height="@dimen/_25sdp"/>
+    <item android:drawable="@drawable/add_grp_filled" android:gravity="center" android:width="@dimen/_22sdp" android:height="@dimen/_22sdp"/>
 
 </layer-list>
