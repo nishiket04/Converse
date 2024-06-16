@@ -35,7 +35,7 @@ public class AuthViewModel extends AndroidViewModel {
 
     // when signup is called
     public void signUp(String email,String pass,String name){
-        repository.signUp(email, pass); // in auth call its signUp
+        repository.signUp(email, pass,name); // in auth call its signUp
     }
     // call the signIn of an Auth class
     public void signIn(String email, String pass){

@@ -7,16 +7,23 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AuthRepository {
 
     private Application application; // application context variable
     private MutableLiveData<FirebaseUser> firebaseUserMutableLiveData; // mutableLive data of an firebaseUser
     private FirebaseAuth firebaseAuth; // FirebaseAuth variable
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // constructor that accept aplication context and get instance of an database also create mutable live data
     public AuthRepository(Application application){
@@ -36,13 +43,26 @@ public class AuthRepository {
     }
 
     // SignIn method
-    public void signUp(String email, String pass){
+    public void signUp(String email, String pass,String name){
         // signup call firebase method
         firebaseAuth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
+                            Map<String, Object> user = new HashMap<>();
+                            user.put("name", name);
+                            db.collection("users").document(email).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
                             firebaseUserMutableLiveData.postValue(firebaseAuth.getCurrentUser());
                         }else {
                             Toast.makeText(application, task.getException().getMessage(), Toast.LENGTH_SHORT).show();
