@@ -12,10 +12,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 
 import com.nishiket.converse.databinding.ActivitySplashScreenBinding;
 import com.nishiket.converse.view.onboarding.OnBoardingActivity;
 import com.nishiket.converse.view.user.MainActivity;
+import com.nishiket.converse.viewmodel.AuthViewModel;
 
 public class SplashScreenActivity extends AppCompatActivity {
    private ActivitySplashScreenBinding binding;
@@ -38,11 +41,17 @@ public class SplashScreenActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
             windowInsetsController.hide(WindowInsetsCompat.Type.systemBars()); // hide status bar and navigation bar
         }
+        AuthViewModel viewModel = new ViewModelProvider((ViewModelStoreOwner) this, (ViewModelProvider.Factory) ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(AuthViewModel.class);
+        Intent i = new Intent(SplashScreenActivity.this, OnBoardingActivity.class);
+        Intent i1 = new Intent(SplashScreenActivity.this, MainActivity.class);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent i = new Intent(SplashScreenActivity.this, OnBoardingActivity.class);
-                startActivity(i);
+                if (viewModel.getCurrentUser() != null) { // if there is any user logged In then
+                    startActivity(i1); // goto home
+                } else {
+                    startActivity(i); // goto login page
+                }
                 finish();
             }
         },3000);
