@@ -16,6 +16,7 @@ navigationUi = "2.7.7"
 swiperefreshlayout = "1.1.0"
 circleimage = "3.1.0"
 firebaseAuth = "23.0.0"
+firebaseStorage = "21.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -33,6 +34,7 @@ navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout"}
 circleimage = { group = "de.hdodenhof", name = "circleimageview", version.ref="circleimage"}
 firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
@@ -16,15 +17,23 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.nishiket.converse.R;
 import com.nishiket.converse.databinding.FragmentSettingBinding;
+import com.nishiket.converse.model.UserDetailModel;
 import com.nishiket.converse.view.login.LoginSignupActivity;
 import com.nishiket.converse.viewmodel.AuthViewModel;
+import com.nishiket.converse.viewmodel.UserDataViewModel;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SettingFragment extends Fragment {
 
     private FragmentSettingBinding settingBinding;
     private ImageView selectedImageView;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -37,7 +46,15 @@ public class SettingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
+        UserDataViewModel userDataViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(UserDataViewModel.class);
+        userDataViewModel.getUserDetail(authViewModel.getCurrentUser().getEmail());
 
+        userDataViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
+            @Override
+            public void onChanged(List<UserDetailModel> userDetailModels) {
+                    loadUserData(userDetailModels.get(0));
+            }
+        });
         settingBinding.changeImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,7 +95,6 @@ public class SettingFragment extends Fragment {
 
             }
         });
-
         AlertDialog dialog = builder.create();
         dialog.show();
     }
@@ -108,5 +124,16 @@ public class SettingFragment extends Fragment {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void loadUserData(UserDetailModel userDetailModel){
+        settingBinding.userName.setText(userDetailModel.getName());
+        Glide.with(getContext()).load(userDetailModel.getUserImage()).error(R.drawable.user_image).into(settingBinding.profileImage);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        executorService.shutdown();
     }
 }

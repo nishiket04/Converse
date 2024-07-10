@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -19,6 +20,8 @@ import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.UserChatAdapter;
 import com.nishiket.converse.databinding.FragmentHomeBinding;
 import com.nishiket.converse.model.UserChatModel;
+import com.nishiket.converse.viewmodel.AuthViewModel;
+import com.nishiket.converse.viewmodel.UserDataViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
