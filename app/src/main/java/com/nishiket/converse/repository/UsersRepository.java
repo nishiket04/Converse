@@ -54,7 +54,6 @@ public class UsersRepository {
                 }
             });
         });
-
     }
 
     public interface firebaseComplte{

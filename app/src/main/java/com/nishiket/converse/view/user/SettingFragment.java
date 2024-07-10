@@ -2,6 +2,7 @@ package com.nishiket.converse.view.user;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.nishiket.converse.R;
 import com.nishiket.converse.databinding.FragmentSettingBinding;
 import com.nishiket.converse.model.UserDetailModel;
@@ -34,6 +39,7 @@ public class SettingFragment extends Fragment {
     private FragmentSettingBinding settingBinding;
     private ImageView selectedImageView;
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,8 +133,25 @@ public class SettingFragment extends Fragment {
     }
 
     private void loadUserData(UserDetailModel userDetailModel){
-        settingBinding.userName.setText(userDetailModel.getName());
-        Glide.with(getContext()).load(userDetailModel.getUserImage()).error(R.drawable.user_image).into(settingBinding.profileImage);
+        executorService.execute(()->{
+            StorageReference storageRef = storage.getReference();
+            StorageReference imageRef = storageRef.child(userDetailModel.getUserImage());
+            // Get the download URL
+            imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    requireActivity().runOnUiThread(()->{
+                        settingBinding.userName.setText(userDetailModel.getName());
+                        Glide.with(getContext()).load(uri).error(R.drawable.user_image).into(settingBinding.profileImage);
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Glide.with(getContext()).load(R.drawable.user_image).into(settingBinding.profileImage);
+                }
+            });
+        });
     }
 
     @Override
