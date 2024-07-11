@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
@@ -18,6 +20,8 @@ import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.ChatAdapter;
 import com.nishiket.converse.databinding.FragmentChatBinding;
 import com.nishiket.converse.model.ChatModel;
+import com.nishiket.converse.viewmodel.AuthViewModel;
+import com.nishiket.converse.viewmodel.ChatsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +31,7 @@ import java.util.concurrent.Executors;
 
 public class ChatFragment extends Fragment {
     private FragmentChatBinding chatBinding;
-    private List<ChatModel> chatModelList = new ArrayList<>();
+//    private List<ChatModel> chatModelList = new ArrayList<>();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,12 +45,20 @@ public class ChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         KeyboardUtil.adjustResize(getActivity(), chatBinding.getRoot());
 
+        AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
+        ChatsViewModel chatsViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
 
-        ChatAdapter chatAdapter = new ChatAdapter(getActivity());
-        chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-        chatBinding.chats.setAdapter(chatAdapter);
-        chatAdapter.setChatModelList(chatModelList);
-        chatAdapter.notifyDataSetChanged();
+        chatsViewModel.getChats("ZZJvPQhpVcYa3mAtfe3c",authViewModel.getCurrentUser().getEmail());
+        chatsViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
+            @Override
+            public void onChanged(List<ChatModel> chatModelList) {
+                ChatAdapter chatAdapter = new ChatAdapter(getActivity());
+                chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+                chatBinding.chats.setAdapter(chatAdapter);
+                chatAdapter.setChatModelList(chatModelList);
+                chatAdapter.notifyDataSetChanged();
+            }
+        });
 
         executorService.execute(()->{
             Bundle arguments = getArguments();

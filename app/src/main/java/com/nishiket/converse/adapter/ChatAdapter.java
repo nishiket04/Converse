@@ -77,8 +77,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public void bind(ChatModel chatModel) {
             // Bind data to the user chat layout
-            binding.message.setText(chatModel.getMessage());
-            binding.time.setText(chatModel.getTime());
+            binding.msg.setText(chatModel.getMsg());
+            binding.time.setText(chatModel.getFormattedTime());
         }
     }
 
@@ -92,8 +92,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         public void bind(ChatModel chatModel) {
             // Bind data to the self chat layout
-            binding.message.setText(chatModel.getMessage());
-            binding.time.setText(chatModel.getTime());
+            binding.msg.setText(chatModel.getMsg());
+            binding.time.setText(chatModel.getFormattedTime());
         }
     }
 }
