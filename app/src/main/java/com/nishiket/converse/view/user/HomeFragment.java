@@ -28,11 +28,14 @@ import com.nishiket.converse.viewmodel.UserDataViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements UserChatAdapter.onClickedItem {
 
     private FragmentHomeBinding fragmentHomeBinding;
     private List<UserChatModel> userChatModelList = new ArrayList<>();
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,9 +57,10 @@ public class HomeFragment extends Fragment {
                     userDataViewModel.getUserFriendsDetailsMutableLiveDara().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
                         @Override
                         public void onChanged(List<UserDetailModel> userDetailModelList) {
-                            UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity(),requireActivity());
+                            UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
                             fragmentHomeBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                             fragmentHomeBinding.chats.setAdapter(userChatAdapter);
+                            userChatAdapter.setOnClickedItem(HomeFragment.this);
                             userChatAdapter.setChatModelList(userDetailModelList);
                             userChatAdapter.notifyDataSetChanged();
                         }
@@ -81,6 +85,19 @@ public class HomeFragment extends Fragment {
                 }
                 return false;
             }
+        });
+    }
+
+    @Override
+    public void onCliced(int i, UserDetailModel userDetailModel) {
+        executorService.execute(()->{
+            Bundle bundle = new Bundle();
+            bundle.putString("name",userDetailModel.getName());
+            bundle.putString("email",userDetailModel.getDocumentId());
+            bundle.putString("image",userDetailModel.getUserImage());
+            requireActivity().runOnUiThread(()->{
+                Navigation.findNavController(fragmentHomeBinding.getRoot()).navigate(R.id.action_homeFragment_to_chatFragment,bundle);
+            });
         });
     }
 }

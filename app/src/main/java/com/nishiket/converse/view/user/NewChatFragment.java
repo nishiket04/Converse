@@ -36,7 +36,7 @@ public class NewChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity(),requireActivity());
+        UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
         newChatBinding.users.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         newChatBinding.users.setAdapter(userChatAdapter);
 //        userChatAdapter.setChatModelList(userChatModelList);

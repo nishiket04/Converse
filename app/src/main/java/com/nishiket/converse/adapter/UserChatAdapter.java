@@ -30,14 +30,19 @@ import java.util.concurrent.Executors;
 public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.viewHolder> {
     private List<UserDetailModel> userChatModelList = new ArrayList<>();
     private Context context;
-    private Activity activity;
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private ExecutorService executorService = Executors.newFixedThreadPool(5);
+    private onClickedItem onClickedItem;
     private UserChatUiBinding binding;
 
-    public UserChatAdapter(Context context, Activity activity) {
+    public UserChatAdapter(Context context) {
         this.context = context;
-        this.activity = activity;
+    }
+
+    public void setOnClickedItem(UserChatAdapter.onClickedItem onClickedItem) {
+        this.onClickedItem = onClickedItem;
+    }
+
+    public interface onClickedItem{
+        void onCliced(int i,UserDetailModel userDetailModel);
     }
 
     public void setChatModelList(List<UserDetailModel> userChatModelList) {
@@ -60,7 +65,8 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.viewHo
         binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_chatFragment);
+                onClickedItem.onCliced(holder.getAdapterPosition(),userChatModelList.get(holder.getAdapterPosition()));
+//                Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_chatFragment);
             }
         });
 //        Glide.with(context).load(userChatModel.getUserImage()).into(binding.userImage);

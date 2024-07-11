@@ -25,6 +25,7 @@
             android:src="@drawable/back" />
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userImgae"
             android:layout_width="@dimen/_28sdp"
             android:layout_height="@dimen/_28sdp"
             android:src="@drawable/user_image"
@@ -39,6 +40,7 @@
             android:orientation="vertical"
             >
         <TextView
+            android:id="@+id/userName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -49,6 +51,7 @@
             android:textSize="@dimen/_13sdp" />
 
         <TextView
+            android:id="@+id/userStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
