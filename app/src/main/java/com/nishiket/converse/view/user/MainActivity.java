@@ -1,6 +1,8 @@
 package com.nishiket.converse.view.user;
 
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -18,6 +20,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.nishiket.converse.ChatApplication;
 import com.nishiket.converse.R;
 import com.nishiket.converse.databinding.ActivityMainBinding;
+import com.nishiket.converse.sqlite.Helper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +31,8 @@ import io.socket.emitter.Emitter;
 public class MainActivity extends AppCompatActivity {
     private Socket mSocket;
     private ActivityMainBinding binding;
+    private Helper helper;
+     SQLiteDatabase db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightStatusBars(false); // White font color on status bar
             windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
         }
+
+        helper = new Helper(this);
+        db =  helper.openDatabase();
 
 
 

@@ -1,5 +1,6 @@
 package com.nishiket.converse.view.user;
 
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.ChatAdapter;
 import com.nishiket.converse.databinding.FragmentChatBinding;
 import com.nishiket.converse.model.ChatModel;
+import com.nishiket.converse.sqlite.Helper;
 import com.nishiket.converse.viewmodel.AuthViewModel;
 import com.nishiket.converse.viewmodel.ChatsViewModel;
 
@@ -33,6 +35,7 @@ public class ChatFragment extends Fragment {
     private FragmentChatBinding chatBinding;
 //    private List<ChatModel> chatModelList = new ArrayList<>();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private String room;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class ChatFragment extends Fragment {
                 String name = arguments.getString("name");
                 String email = arguments.getString("email");
                 String image = arguments.getString("image");
+                room = arguments.getString("room",null);
                 requireActivity().runOnUiThread(()->{
                     chatBinding.userName.setText(name);
                     Glide.with(getContext()).load(image).error(R.drawable.user_image).into(chatBinding.userImgae);
@@ -60,13 +64,15 @@ public class ChatFragment extends Fragment {
                 Log.d("ChatFragment", "Name: " + name);
                 Log.d("ChatFragment", "Email: " + email);
                 Log.d("ChatFragment", "UserImage: " + image);
+                Log.d("data", "room: "+room);
             }
         });
+
 
         AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
         ChatsViewModel chatsViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
 
-        chatsViewModel.getChats("ZZJvPQhpVcYa3mAtfe3c",authViewModel.getCurrentUser().getEmail());
+        chatsViewModel.getChats(room,authViewModel.getCurrentUser().getEmail());
         chatsViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
             @Override
             public void onChanged(List<ChatModel> chatModelList) {
@@ -77,7 +83,5 @@ public class ChatFragment extends Fragment {
                 chatAdapter.notifyDataSetChanged();
             }
         });
-
-
     }
 }
