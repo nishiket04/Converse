@@ -8,12 +8,16 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nishiket.converse.model.UserDetailModel;
+import com.nishiket.converse.model.UserFriendsModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,7 +31,7 @@ public class UsersRepository {
     public UsersRepository(Application application,firebaseComplte fi) {
         this.application = application;
         this.firebaseComplte= fi;
-        this.executorService = Executors.newSingleThreadExecutor();
+        this.executorService = Executors.newFixedThreadPool(10);
     }
 
     public void getUserDetail(String email){
@@ -56,7 +60,61 @@ public class UsersRepository {
         });
     }
 
+    public void getUserFriends(String email){
+        executorService.execute(()->{
+            db.collection("users").document(email).collection("userFriends").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        QuerySnapshot result = task.getResult();
+                        if(result!=null){
+                            List<UserFriendsModel> userFriendsModels = task.getResult().toObjects(UserFriendsModel.class);
+                            if(firebaseComplte!=null){
+                                firebaseComplte.onGetFriewnds(userFriendsModels);
+                                Log.d("data", "onComplete f: "+userFriendsModels.size());
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
+    public void getFriendsDetails(List<UserFriendsModel> userFriendsModels){
+        executorService.execute(()->{
+            List<String> documentIds = new ArrayList<>();
+            Map<String, String> lastMessagesMap = new HashMap<>();
+            for (UserFriendsModel model : userFriendsModels) {
+                documentIds.add(model.getUserId());
+                lastMessagesMap.put(model.getUserId(), model.getLastMessage());
+//                Log.d("data", "getFriendsDetails: " +model.getUserId() );
+            }
+            db.collection("users").whereIn(FieldPath.documentId(),documentIds).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        QuerySnapshot result = task.getResult();
+                        if(result!=null){
+                            List<UserDetailModel> userDetailModelList = task.getResult().toObjects(UserDetailModel.class);
+                            for (UserDetailModel userDetailModel : userDetailModelList) {
+                                String lastMessage = lastMessagesMap.get(userDetailModel.getDocumentId());
+                                userDetailModel.setLastMessage(lastMessage);
+                            }
+
+                            if(firebaseComplte!=null){
+                                firebaseComplte.onFriendsDetails(userDetailModelList);
+                                Log.d("data", "onComplete fd: "+userDetailModelList.size());
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
     public interface firebaseComplte{
         void onComplete(List<UserDetailModel> userDetailModelList);
+        void onGetFriewnds(List<UserFriendsModel> userFriendsModelList);
+        void onFriendsDetails(List<UserDetailModel> userDetailModelList);
     }
 }

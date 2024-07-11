@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +21,8 @@ import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.UserChatAdapter;
 import com.nishiket.converse.databinding.FragmentHomeBinding;
 import com.nishiket.converse.model.UserChatModel;
+import com.nishiket.converse.model.UserDetailModel;
+import com.nishiket.converse.model.UserFriendsModel;
 import com.nishiket.converse.viewmodel.AuthViewModel;
 import com.nishiket.converse.viewmodel.UserDataViewModel;
 
@@ -41,12 +44,25 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
-        fragmentHomeBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        fragmentHomeBinding.chats.setAdapter(userChatAdapter);
-        userChatAdapter.setChatModelList(userChatModelList);
-        userChatAdapter.notifyDataSetChanged();
+        AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
+        UserDataViewModel userDataViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(UserDataViewModel.class);
+        userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
+        userDataViewModel.getUserFriendsMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserFriendsModel>>() {
+            @Override
+            public void onChanged(List<UserFriendsModel> userFriendsModelList) {
+                    userDataViewModel.getFriendsDetails(userFriendsModelList);
+                    userDataViewModel.getUserFriendsDetailsMutableLiveDara().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
+                        @Override
+                        public void onChanged(List<UserDetailModel> userDetailModelList) {
+                            UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity(),requireActivity());
+                            fragmentHomeBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                            fragmentHomeBinding.chats.setAdapter(userChatAdapter);
+                            userChatAdapter.setChatModelList(userDetailModelList);
+                            userChatAdapter.notifyDataSetChanged();
+                        }
+                    });
+            }
+        });
 
         fragmentHomeBinding.addChat.setOnClickListener(new View.OnClickListener() {
             @Override

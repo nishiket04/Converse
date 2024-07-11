@@ -10,6 +10,8 @@ public class UserDetailModel {
     private String name;
     @PropertyName("userImage")
     private String userImage;
+    @PropertyName("lastMessage")
+    private String lastMessage;
 
     public UserDetailModel() {
     }
@@ -36,5 +38,12 @@ public class UserDetailModel {
 
     public void setUserImage(String userImage) {
         this.userImage = userImage;
+    }
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
     }
 }
