@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
         }
 
-        helper = new Helper(this);
+        helper = new Helper(this); // to keep databse open
         db =  helper.openDatabase();
 
 
