@@ -45,21 +45,6 @@ public class ChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         KeyboardUtil.adjustResize(getActivity(), chatBinding.getRoot());
 
-        AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
-        ChatsViewModel chatsViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
-
-        chatsViewModel.getChats("ZZJvPQhpVcYa3mAtfe3c",authViewModel.getCurrentUser().getEmail());
-        chatsViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
-            @Override
-            public void onChanged(List<ChatModel> chatModelList) {
-                ChatAdapter chatAdapter = new ChatAdapter(getActivity());
-                chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-                chatBinding.chats.setAdapter(chatAdapter);
-                chatAdapter.setChatModelList(chatModelList);
-                chatAdapter.notifyDataSetChanged();
-            }
-        });
-
         executorService.execute(()->{
             Bundle arguments = getArguments();
             if (arguments != null) {
@@ -77,6 +62,22 @@ public class ChatFragment extends Fragment {
                 Log.d("ChatFragment", "UserImage: " + image);
             }
         });
+
+        AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
+        ChatsViewModel chatsViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
+
+        chatsViewModel.getChats("ZZJvPQhpVcYa3mAtfe3c",authViewModel.getCurrentUser().getEmail());
+        chatsViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
+            @Override
+            public void onChanged(List<ChatModel> chatModelList) {
+                ChatAdapter chatAdapter = new ChatAdapter(getActivity());
+                chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+                chatBinding.chats.setAdapter(chatAdapter);
+                chatAdapter.setChatModelList(chatModelList);
+                chatAdapter.notifyDataSetChanged();
+            }
+        });
+
 
     }
 }
