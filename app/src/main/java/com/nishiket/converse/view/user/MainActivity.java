@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 //        mSocket.on(Socket.EVENT_CONNECT, args -> Log.d("SocketIO", "Connected"));
 //        mSocket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.d("SocketIO", "Connection Error: " + args[0]));
 //        mSocket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketIO", "Disconnected"));
-        mSocket.connect();
+//        mSocket.connect();
         mSocket.on("chat message", onNewMessage);
         mSocket.on(Socket.EVENT_CONNECT, args -> {
             Log.d("SocketIO", "Connected");
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("SocketIO", "Failed to create JSON object: " + e.getMessage());
             }
         });
-        mSocket.emit("chat message", "45");
+//        mSocket.emit("chat message", "nishiket04@gmail.com","abc04@gmail.com","45","ZZJvPQhpVcYa3mAtfe3c");
 
     }
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
