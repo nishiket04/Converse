@@ -1,6 +1,5 @@
 package com.nishiket.converse.view.user;
 
-import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,11 +20,9 @@ import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.ChatAdapter;
 import com.nishiket.converse.databinding.FragmentChatBinding;
 import com.nishiket.converse.model.ChatModel;
-import com.nishiket.converse.sqlite.Helper;
 import com.nishiket.converse.viewmodel.AuthViewModel;
 import com.nishiket.converse.viewmodel.ChatsViewModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

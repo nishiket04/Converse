@@ -17,6 +17,11 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
     private MutableLiveData<List<UserFriendsModel>> userFriendsMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<UserDetailModel>> userFriendsDetailsMutableLiveDara = new MutableLiveData<>();
     private UsersRepository usersRepository;
+    private MutableLiveData<Boolean> booleanMutableLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<Boolean> getBooleanMutableLiveData() {
+        return booleanMutableLiveData;
+    }
 
     public MutableLiveData<List<UserDetailModel>> getUserFriendsDetailsMutableLiveDara() {
         return userFriendsDetailsMutableLiveDara;
@@ -47,6 +52,12 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
         usersRepository.getFriendsDetails(userFriendsModels);
     }
 
+    public void setUserName(String name,String email){
+        usersRepository.setUserName(name, email);
+    }
+
+
+
     @Override
     public void onComplete(List<UserDetailModel> userFirebaseModelList) {
         mutableLiveData.setValue(userFirebaseModelList);
@@ -60,5 +71,10 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
     @Override
     public void onFriendsDetails(List<UserDetailModel> userDetailModelList) {
         userFriendsDetailsMutableLiveDara.setValue(userDetailModelList);
+    }
+
+    @Override
+    public void onNameSet(Boolean isComplete) {
+        booleanMutableLiveData.setValue(isComplete);
     }
 }

@@ -16,7 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -82,23 +84,44 @@ public class SettingFragment extends Fragment {
         settingBinding.editName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openNameDilog();
+                openNameDilog(authViewModel.getCurrentUser().getEmail(),userDataViewModel);
             }
         });
     }
 
-    private void openNameDilog() {
+    private void openNameDilog(String email,UserDataViewModel userDataViewModel) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dilog_change_name, null);
         builder.setView(dialogView);
+        EditText newName = dialogView.findViewById(R.id.newName);
 
 
         builder.setNegativeButton("Cancel", null);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                String name = newName.getText().toString();
+                if(!name.isEmpty()){
+                    userDataViewModel.setUserName(name,"kb");
+                    userDataViewModel.getBooleanMutableLiveData().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                        @Override
+                        public void onChanged(Boolean aBoolean) {
+                            if(aBoolean == true){
+                                userDataViewModel.getUserDetail(email);
+                                userDataViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
+                                    @Override
+                                    public void onChanged(List<UserDetailModel> userDetailModels) {
+                                        loadUserData(userDetailModels.get(0));
+                                    }
+                                });
+                            }
+                            else {
+                                Toast.makeText(getActivity(), "Somting Went Wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
             }
         });
         AlertDialog dialog = builder.create();

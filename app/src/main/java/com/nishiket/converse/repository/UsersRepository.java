@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
@@ -112,9 +113,40 @@ public class UsersRepository {
         });
     }
 
+    public void setUserName(String name, String email){
+        executorService.execute(()->{
+//            Map<String,Object> map = new HashMap<>();
+//            map.put("name",name);
+            db.collection("users").document(email).update("name",name).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if(task.isSuccessful()){
+                        if(firebaseComplte!=null){
+                            firebaseComplte.onNameSet(true);
+                        }
+                        Log.d("data","name:"+name);
+                    }
+                    else {
+                        if(firebaseComplte!=null){
+                            firebaseComplte.onNameSet(false);
+                        }
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    if(firebaseComplte!=null){
+                        firebaseComplte.onNameSet(false);
+                    }
+                }
+            });
+        });
+    }
+
     public interface firebaseComplte{
         void onComplete(List<UserDetailModel> userDetailModelList);
         void onGetFriewnds(List<UserFriendsModel> userFriendsModelList);
         void onFriendsDetails(List<UserDetailModel> userDetailModelList);
+        void onNameSet(Boolean isComplete);
     }
 }
