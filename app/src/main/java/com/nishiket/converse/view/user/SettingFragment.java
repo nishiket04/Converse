@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.nishiket.converse.R;
 import com.nishiket.converse.databinding.FragmentSettingBinding;
 import com.nishiket.converse.model.UserDetailModel;
@@ -40,8 +43,10 @@ public class SettingFragment extends Fragment {
 
     private FragmentSettingBinding settingBinding;
     private ImageView selectedImageView;
+    private Uri uri = null;
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     FirebaseStorage storage = FirebaseStorage.getInstance();
+    private static final int PICK_IMAGE_REQUEST = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +71,7 @@ public class SettingFragment extends Fragment {
         settingBinding.changeImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openImageDilog();
+                openImageDilog(authViewModel.getCurrentUser().getEmail(),userDataViewModel);
             }
         });
 
@@ -103,7 +108,7 @@ public class SettingFragment extends Fragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 String name = newName.getText().toString();
                 if(!name.isEmpty()){
-                    userDataViewModel.setUserName(name,"kb");
+                    userDataViewModel.setUserName(name,email);
                     userDataViewModel.getBooleanMutableLiveData().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
                         @Override
                         public void onChanged(Boolean aBoolean) {
@@ -128,7 +133,7 @@ public class SettingFragment extends Fragment {
         dialog.show();
     }
 
-    private void openImageDilog() {
+    private void openImageDilog(String email,UserDataViewModel userDataViewModel) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dilog_change_image, null);
@@ -140,6 +145,7 @@ public class SettingFragment extends Fragment {
         chooseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                openGallery();
             }
         });
 
@@ -147,7 +153,26 @@ public class SettingFragment extends Fragment {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-
+                if(uri!=null) {
+                    userDataViewModel.setUserImage(uri,email);
+                    userDataViewModel.getBooleanMutableLiveData().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                        @Override
+                        public void onChanged(Boolean aBoolean) {
+                            if(aBoolean == true){
+                                userDataViewModel.getUserDetail(email);
+                                userDataViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
+                                    @Override
+                                    public void onChanged(List<UserDetailModel> userDetailModels) {
+                                        loadUserData(userDetailModels.get(0));
+                                    }
+                                });
+                            }
+                            else {
+                                Toast.makeText(getActivity(), "Somting Went Wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+                }
             }
         });
 
@@ -156,25 +181,25 @@ public class SettingFragment extends Fragment {
     }
 
     private void loadUserData(UserDetailModel userDetailModel){
-        executorService.execute(()->{
-            StorageReference storageRef = storage.getReference();
-            StorageReference imageRef = storageRef.child(userDetailModel.getUserImage());
-            // Get the download URL
-            imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    requireActivity().runOnUiThread(()->{
-                        settingBinding.userName.setText(userDetailModel.getName());
-                        Glide.with(getContext()).load(uri).error(R.drawable.user_image).into(settingBinding.profileImage);
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Glide.with(getContext()).load(R.drawable.user_image).into(settingBinding.profileImage);
-                }
-            });
-        });
+        settingBinding.userName.setText(userDetailModel.getName());
+        Glide.with(getContext()).load(userDetailModel.getUserImage()).error(R.drawable.user_image).into(settingBinding.profileImage);
+
+    }
+
+
+    private void openGallery() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == getActivity().RESULT_OK && data != null) {
+            uri = data.getData();
+            Glide.with(getContext()).load(uri).into(selectedImageView);
+        }
     }
 
     @Override

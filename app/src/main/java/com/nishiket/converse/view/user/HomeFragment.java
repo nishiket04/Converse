@@ -55,7 +55,13 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
 
         AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
         UserDataViewModel userDataViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(UserDataViewModel.class);
-        userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
+
+        try{ // don't know why but this method is invoking when we are in LoginSignUpActivity.. so i put it in a try catch block, also invoking from onbaring when we try to go to LoginSignupActivity
+            userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
+        }catch (Exception e){
+            Log.d("data", "onViewCreated: "+e.toString());
+        }
+
         userDataViewModel.getUserFriendsMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserFriendsModel>>() {
             @Override
             public void onChanged(List<UserFriendsModel> userFriendsModelList) {

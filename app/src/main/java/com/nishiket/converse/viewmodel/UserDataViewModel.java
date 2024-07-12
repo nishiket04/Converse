@@ -1,6 +1,7 @@
 package com.nishiket.converse.viewmodel;
 
 import android.app.Application;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -56,6 +57,10 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
         usersRepository.setUserName(name, email);
     }
 
+    public void setUserImage(Uri uri,String email){
+        usersRepository.setImage(uri, email);
+    }
+
 
 
     @Override
@@ -74,7 +79,7 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
     }
 
     @Override
-    public void onNameSet(Boolean isComplete) {
+    public void onUpdated(Boolean isComplete) {
         booleanMutableLiveData.setValue(isComplete);
     }
 }
