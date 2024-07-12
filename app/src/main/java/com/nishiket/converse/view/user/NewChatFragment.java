@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -16,14 +18,17 @@ import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.UserChatAdapter;
 import com.nishiket.converse.databinding.FragmentNewChatBinding;
 import com.nishiket.converse.model.UserChatModel;
+import com.nishiket.converse.model.UserDetailModel;
+import com.nishiket.converse.viewmodel.AuthViewModel;
+import com.nishiket.converse.viewmodel.NewChatAndGroupViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class NewChatFragment extends Fragment {
+public class NewChatFragment extends Fragment implements UserChatAdapter.onClickedItem {
     private FragmentNewChatBinding newChatBinding;
-    private List<UserChatModel> userChatModelList = new ArrayList<>();
+//    private List<UserChatModel> userChatModelList = new ArrayList<>();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,11 +41,22 @@ public class NewChatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
-        newChatBinding.users.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        newChatBinding.users.setAdapter(userChatAdapter);
-//        userChatAdapter.setChatModelList(userChatModelList);
-//        userChatAdapter.notifyDataSetChanged();
+        AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
+        NewChatAndGroupViewModel newChatAndGroupViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(NewChatAndGroupViewModel.class);
+
+        newChatAndGroupViewModel.getUsers(authViewModel.getCurrentUser().getEmail());
+        newChatAndGroupViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
+            @Override
+            public void onChanged(List<UserDetailModel> userDetailModelList) {
+                UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
+                newChatBinding.users.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                newChatBinding.users.setAdapter(userChatAdapter);
+                userChatAdapter.setChatModelList(userDetailModelList);
+                userChatAdapter.setOnClickedItem(NewChatFragment.this);
+                userChatAdapter.notifyDataSetChanged();
+            }
+        });
+
 
         newChatBinding.addGrp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,5 +64,14 @@ public class NewChatFragment extends Fragment {
                 Navigation.findNavController(view).navigate(R.id.action_newChatFragment_to_addGroupFragment);
             }
         });
+    }
+
+    @Override
+    public void onCliced(int i, UserDetailModel userDetailModel) {
+        Bundle bundle = new Bundle();
+        bundle.putString("name",userDetailModel.getName());
+        bundle.putString("email",userDetailModel.getDocumentId());
+        bundle.putString("image",userDetailModel.getUserImage());
+        Navigation.findNavController(newChatBinding.getRoot()).navigate(R.id.action_newChatFragment_to_chatFragment,bundle);
     }
 }

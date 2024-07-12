@@ -69,7 +69,9 @@ public class ChatFragment extends Fragment {
         AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
         ChatsViewModel chatsViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
 
-        chatsViewModel.getChats(room,authViewModel.getCurrentUser().getEmail());
+        if(room!=null) {
+            chatsViewModel.getChats(room, authViewModel.getCurrentUser().getEmail());
+        }
         chatsViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
             @Override
             public void onChanged(List<ChatModel> chatModelList) {
