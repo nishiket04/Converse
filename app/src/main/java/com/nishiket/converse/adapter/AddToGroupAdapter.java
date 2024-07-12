@@ -11,16 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.nishiket.converse.databinding.AddToGroupLayoutBinding;
 import com.nishiket.converse.model.UserChatModel;
+import com.nishiket.converse.model.UserDetailModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class AddToGroupAdapter extends RecyclerView.Adapter<AddToGroupAdapter.viewHolder> {
     private Context context;
-    private List<UserChatModel> userChatModelList = new ArrayList<>();
+    private List<UserDetailModel> userChatModelList = new ArrayList<>();
     private AddToGroupLayoutBinding binding;
 
-    public void setUserChatModelList(List<UserChatModel> userChatModelList) {
+    public void setUserChatModelList(List<UserDetailModel> userChatModelList) {
         this.userChatModelList = userChatModelList;
     }
 
@@ -37,10 +38,10 @@ public class AddToGroupAdapter extends RecyclerView.Adapter<AddToGroupAdapter.vi
 
     @Override
     public void onBindViewHolder(@NonNull AddToGroupAdapter.viewHolder holder, int position) {
-        UserChatModel userChatModel = userChatModelList.get(position);
+        UserDetailModel userChatModel = userChatModelList.get(position);
         binding.userName.setText(userChatModel.getName());
         binding.lastMessage.setText(userChatModel.getLastMessage());
-        Glide.with(context).load(userChatModel.getImage()).into(binding.userImage);
+        Glide.with(context).load(userChatModel.getUserImage()).into(binding.userImage);
     }
 
     @Override
