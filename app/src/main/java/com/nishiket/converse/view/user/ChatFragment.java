@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.Timestamp;
 import com.nishiket.converse.ChatApplication;
 import com.nishiket.converse.KeyboardUtil;
 import com.nishiket.converse.R;
@@ -27,6 +28,7 @@ import com.nishiket.converse.viewmodel.ChatsViewModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,9 +40,11 @@ import io.socket.emitter.Emitter;
 public class ChatFragment extends Fragment {
     private FragmentChatBinding chatBinding;
     private Socket mSocket;
-//    private List<ChatModel> chatModelList = new ArrayList<>();
+    private AuthViewModel authViewModel;
+    private List<ChatModel> chatModelListGlobal = new ArrayList<>();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private String room;
+    private ChatAdapter chatAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,7 +60,7 @@ public class ChatFragment extends Fragment {
         mSocket = app.getSocket();
 
         mSocket.on("chat message", onNewMessage);
-        mSocket.on("joinRoom",onJoinRoom);
+//        mSocket.on("joinRoom",onJoinRoom);
 
         executorService.execute(()->{
             Bundle arguments = getArguments();
@@ -65,7 +69,7 @@ public class ChatFragment extends Fragment {
                 String email = arguments.getString("email");
                 String image = arguments.getString("image");
                 room = arguments.getString("room",null);
-//                mSocket.emit("joinRoom",room);
+                mSocket.emit("joinRoom",room);
                 requireActivity().runOnUiThread(()->{
                     chatBinding.userName.setText(name);
                     Glide.with(getContext()).load(image).error(R.drawable.user_image).into(chatBinding.userImgae);
@@ -80,21 +84,21 @@ public class ChatFragment extends Fragment {
         });
 
 
-        AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
+         authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
         ChatsViewModel chatsViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
-
+        chatAdapter = new ChatAdapter(getActivity());
         if(room!=null) {
             chatsViewModel.getChats(room, authViewModel.getCurrentUser().getEmail());
         }
         chatsViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
             @Override
             public void onChanged(List<ChatModel> chatModelList) {
-                ChatAdapter chatAdapter = new ChatAdapter(getActivity());
+                chatModelListGlobal = chatModelList;
                 chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
                 chatBinding.chats.setAdapter(chatAdapter);
-                chatAdapter.setChatModelList(chatModelList);
+                chatAdapter.setChatModelList(chatModelListGlobal);
                 chatAdapter.notifyDataSetChanged();
-//                mSocket.emit("chat message", "nishiket04@gmail.com","abc04@gmail.com","4","ZZJvPQhpVcYa3mAtfe3c");
+//                mSocket.emit("chat message", "nishiket04@gmail.com","abc04@gmail.com","This is Test Messesage","ZZJvPQhpVcYa3mAtfe3c");
             }
         });
     }
@@ -107,8 +111,22 @@ public class ChatFragment extends Fragment {
                     if (args.length > 0 && args[0] instanceof JSONObject) {
                         JSONObject data = (JSONObject) args[0];
                         String message;
+                        String from;
+                        String to;
                         try {
                             message = data.getString("message");
+                            from = data.getString("from");
+                            to = data.getString("to");
+                            ChatModel chatModel = new ChatModel();
+                            chatModel.setMsg(message);
+                            chatModel.setFrom(from);
+                            chatModel.setTo(to);
+                            Timestamp timestamp = Timestamp.now();
+                            chatModel.setTime(timestamp);
+                            chatModel.determineType(authViewModel.getCurrentUser().getEmail());
+                            chatModelListGlobal.add(chatModel);
+                            chatAdapter.setChatModelList(chatModelListGlobal);
+                            chatAdapter.notifyItemInserted(chatModelListGlobal.size()-1);
                             Log.d("SocketIO", "Received message: " + message+ "  " +data.getString("from"));
                             // Handle the message as needed
                         } catch (JSONException e) {
