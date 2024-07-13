@@ -54,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
 
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
-//        mSocket.on(Socket.EVENT_CONNECT, args -> Log.d("SocketIO", "Connected"));
-//        mSocket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.d("SocketIO", "Connection Error: " + args[0]));
-//        mSocket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketIO", "Disconnected"));
-//        mSocket.connect();
+        mSocket.on(Socket.EVENT_CONNECT, args -> Log.d("SocketIO", "Connected"));
+        mSocket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.d("SocketIO", "Connection Error: " + args[0]));
+        mSocket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketIO", "Disconnected"));
+        mSocket.connect();
         mSocket.on("chat message", onNewMessage);
         mSocket.on(Socket.EVENT_CONNECT, args -> {
             Log.d("SocketIO", "Connected");
