@@ -72,7 +72,7 @@ public class ChatModel {
     }
 
     public void determineType(String email) {
-        if (this.to.equals(email)) {
+        if (this.to.equals(email) && !this.from.equals(email)) {
             this.type = 0;
         } else {
             this.type = 1;
