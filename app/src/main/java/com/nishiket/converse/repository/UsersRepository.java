@@ -93,9 +93,11 @@ public class UsersRepository {
         executorService.execute(()->{
             List<String> documentIds = new ArrayList<>();
             Map<String, String> lastMessagesMap = new HashMap<>();
+            Map<String, String> roomMap = new HashMap<>();
             for (UserFriendsModel model : userFriendsModels) {
                 documentIds.add(model.getUserId());
                 lastMessagesMap.put(model.getUserId(), model.getLastMessage());
+                roomMap.put(model.getUserId(), model.getRoom());
 //                Log.d("data", "getFriendsDetails: " +model.getUserId() );
             }
             if(!documentIds.isEmpty()) { // if there is no friends then don't run the query
@@ -108,7 +110,9 @@ public class UsersRepository {
                                 List<UserDetailModel> userDetailModelList = task.getResult().toObjects(UserDetailModel.class);
                                 for (UserDetailModel userDetailModel : userDetailModelList) {
                                     String lastMessage = lastMessagesMap.get(userDetailModel.getDocumentId());
+                                    String room = roomMap.get(userDetailModel.getDocumentId());
                                     userDetailModel.setLastMessage(lastMessage);
+                                    userDetailModel.setRoom(room);
                                 }
 
                                 if (firebaseComplte != null) {
