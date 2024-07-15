@@ -7,12 +7,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.AddToGroupAdapter;
@@ -51,7 +53,7 @@ public class AddGroupFragment extends Fragment {
         }catch (Exception e){
             Log.d("data", "onViewCreated: "+e.toString());
         }
-
+        AddToGroupAdapter userChatAdapter = new AddToGroupAdapter(getActivity());
         userDataViewModel.getUserFriendsMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserFriendsModel>>() {
             @Override
             public void onChanged(List<UserFriendsModel> userFriendsModelList) {
@@ -59,13 +61,28 @@ public class AddGroupFragment extends Fragment {
                 userDataViewModel.getUserFriendsDetailsMutableLiveDara().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
                     @Override
                     public void onChanged(List<UserDetailModel> userDetailModelList) {
-                        AddToGroupAdapter userChatAdapter = new AddToGroupAdapter(getActivity());
                         addGroupBinding.users.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                         addGroupBinding.users.setAdapter(userChatAdapter);
                         userChatAdapter.setUserChatModelList(userDetailModelList);
                         userChatAdapter.notifyDataSetChanged();
                     }
                 });
+            }
+        });
+
+        addGroupBinding.create.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!addGroupBinding.grpName.getText().toString().isEmpty()) {
+                    Bundle bundle = new Bundle();
+                    bundle.putStringArrayList("users", userChatAdapter.getSelectedUsers());
+                    bundle.putString("name",addGroupBinding.grpName.getText().toString());
+                    bundle.putBoolean("isGroup",true);
+                    Log.d("grp","users:"+userChatAdapter.getSelectedUsers().size()+ " " + userChatAdapter.getSelectedUsers().get(0));
+                    Navigation.findNavController(addGroupBinding.getRoot()).navigate(R.id.action_addGroupFragment_to_chatFragment,bundle);
+                }else {
+                    Toast.makeText(getActivity().getApplication(), "Enter Group Name", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

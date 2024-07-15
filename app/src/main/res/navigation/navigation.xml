@@ -80,5 +80,9 @@
         android:id="@+id/addGroupFragment"
         android:name="com.nishiket.converse.view.user.AddGroupFragment"
         android:label="fragment_add_group"
-        tools:layout="@layout/fragment_add_group" />
+        tools:layout="@layout/fragment_add_group" >
+        <action
+            android:id="@+id/action_addGroupFragment_to_chatFragment"
+            app:destination="@id/chatFragment" />
+    </fragment>
 </navigation>

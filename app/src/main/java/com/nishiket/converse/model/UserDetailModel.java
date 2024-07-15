@@ -15,6 +15,16 @@ public class UserDetailModel {
     @PropertyName("room")
     private String room;
 
+    private boolean isChecked;
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
+    }
+
     public String getRoom() {
         return room;
     }
