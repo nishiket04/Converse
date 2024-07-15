@@ -27,6 +27,7 @@ import com.nishiket.converse.databinding.FragmentHomeBinding;
 import com.nishiket.converse.model.UserChatModel;
 import com.nishiket.converse.model.UserDetailModel;
 import com.nishiket.converse.model.UserFriendsModel;
+import com.nishiket.converse.viewmodel.AddToGroupViewModel;
 import com.nishiket.converse.viewmodel.AuthViewModel;
 import com.nishiket.converse.viewmodel.UserDataViewModel;
 
@@ -39,7 +40,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
 
     private FragmentHomeBinding fragmentHomeBinding;
     private String room;
-    private List<UserChatModel> userChatModelList = new ArrayList<>();
+    private List<UserDetailModel> userDetailModelListGlobal = new ArrayList<>();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,14 +55,18 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
 
         AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
         UserDataViewModel userDataViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(UserDataViewModel.class);
-
+        AddToGroupViewModel addToGroupViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AddToGroupViewModel.class);
         try{ // don't know why but this method is invoking when we are in LoginSignUpActivity.. so i put it in a try catch block, also invoking from onbaring when we try to go to LoginSignupActivity
             userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
+            addToGroupViewModel.getGroups(authViewModel.getCurrentUser().getEmail());
             FirebaseMessaging.getInstance().subscribeToTopic(TopicUtils.sanitizeTopicName(authViewModel.getCurrentUser().getEmail()));
         }catch (Exception e){
             Log.d("data", "onViewCreated: "+e.toString());
         }
-
+        UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
+        fragmentHomeBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        fragmentHomeBinding.chats.setAdapter(userChatAdapter);
+        userChatAdapter.setOnClickedItem(HomeFragment.this);
         userDataViewModel.getUserFriendsMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserFriendsModel>>() {
             @Override
             public void onChanged(List<UserFriendsModel> userFriendsModelList) {
@@ -69,16 +74,22 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
                     userDataViewModel.getUserFriendsDetailsMutableLiveDara().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
                         @Override
                         public void onChanged(List<UserDetailModel> userDetailModelList) {
-                            UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
-                            fragmentHomeBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                            fragmentHomeBinding.chats.setAdapter(userChatAdapter);
-                            userChatAdapter.setOnClickedItem(HomeFragment.this);
-                            userChatAdapter.setChatModelList(userDetailModelList);
+                            userDetailModelListGlobal = userDetailModelList;
+                            userChatAdapter.setChatModelList(userDetailModelListGlobal);
                             userChatAdapter.notifyDataSetChanged();
+                            addToGroupViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
+                                @Override
+                                public void onChanged(List<UserDetailModel> userDetailModelList) {
+                                    userDetailModelListGlobal.addAll(userDetailModelList);
+                                    userChatAdapter.setChatModelList(userDetailModelListGlobal);
+                                    userChatAdapter.notifyDataSetChanged();
+                                }
+                            });
                         }
                     });
             }
         });
+
 
         fragmentHomeBinding.addChat.setOnClickListener(new View.OnClickListener() {
             @Override
