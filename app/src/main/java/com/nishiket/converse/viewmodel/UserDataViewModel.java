@@ -17,8 +17,13 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
     private MutableLiveData<List<UserDetailModel>> mutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<UserFriendsModel>> userFriendsMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<UserDetailModel>> userFriendsDetailsMutableLiveDara = new MutableLiveData<>();
+    private MutableLiveData<String> roomMutableLiveData = new MutableLiveData<>();
     private UsersRepository usersRepository;
     private MutableLiveData<Boolean> booleanMutableLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<String> getRoomMutableLiveData() {
+        return roomMutableLiveData;
+    }
 
     public MutableLiveData<Boolean> getBooleanMutableLiveData() {
         return booleanMutableLiveData;
@@ -61,6 +66,10 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
         usersRepository.setImage(uri, email);
     }
 
+    public void getNewChatRoom(String email,String user){
+        usersRepository.getRoomForNew(email, user);
+    }
+
 
 
     @Override
@@ -81,5 +90,10 @@ public class UserDataViewModel extends AndroidViewModel implements UsersReposito
     @Override
     public void onUpdated(Boolean isComplete) {
         booleanMutableLiveData.setValue(isComplete);
+    }
+
+    @Override
+    public void onNewChatRoom(String room) {
+            roomMutableLiveData.setValue(room);
     }
 }

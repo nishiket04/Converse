@@ -30,6 +30,7 @@ import com.nishiket.converse.databinding.FragmentChatBinding;
 import com.nishiket.converse.model.ChatModel;
 import com.nishiket.converse.viewmodel.AuthViewModel;
 import com.nishiket.converse.viewmodel.ChatsViewModel;
+import com.nishiket.converse.viewmodel.UserDataViewModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,6 +56,9 @@ public class ChatFragment extends Fragment {
     private boolean mTyping = false;
     private ChatAdapter chatAdapter;
     private static final int TYPING_TIMER_LENGTH = 600;
+    private Boolean newChat = false;
+    private UserDataViewModel userDataViewModel;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,6 +76,7 @@ public class ChatFragment extends Fragment {
         mSocket.on("joinRoom",onJoinRoom);
         mSocket.on("typing",onTyping);
         mSocket.on("stop typing",onStopTyping);
+        mSocket.on("new chat",onNewChat);
 
         executorService.execute(()->{
             Bundle arguments = getArguments();
@@ -80,7 +85,10 @@ public class ChatFragment extends Fragment {
                 email = arguments.getString("email");
                 String image = arguments.getString("image");
                 room = arguments.getString("room",null);
-                mSocket.emit("joinRoom",room);
+                newChat = arguments.getBoolean("new",false);
+                if(room!=null) {
+                    mSocket.emit("joinRoom", room);
+                }
                 requireActivity().runOnUiThread(()->{
                     chatBinding.userName.setText(name);
                     Glide.with(getContext()).load(image).error(R.drawable.user_image).into(chatBinding.userImgae);
@@ -95,7 +103,8 @@ public class ChatFragment extends Fragment {
         });
 
 
-         authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
+        userDataViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(UserDataViewModel.class);
+        authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
         ChatsViewModel chatsViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
         chatAdapter = new ChatAdapter(getActivity());
         if(room!=null) {
@@ -117,13 +126,39 @@ public class ChatFragment extends Fragment {
         chatBinding.sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mSocket.emit("chat message", authViewModel.getCurrentUser().getEmail(),email,chatBinding.sendEdt.getText().toString(),room);
-                ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(),authViewModel.getCurrentUser().getEmail(),email);
-                chatModelListGlobal.add(chatModel);
-                chatAdapter.setChatModelList(chatModelListGlobal);
-                chatAdapter.notifyItemInserted(chatModelListGlobal.size()-1);
-                scrollToBottom();
-                chatBinding.sendEdt.setText("");
+                if(newChat){
+                    mSocket.emit("new chat", authViewModel.getCurrentUser().getEmail(), email, chatBinding.sendEdt.getText().toString());
+                    ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
+                    chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+                    chatModelListGlobal.add(chatModel);
+                    chatBinding.chats.setAdapter(chatAdapter);
+                    chatAdapter.setChatModelList(chatModelListGlobal);
+                    chatAdapter.notifyDataSetChanged();
+                    chatBinding.sendEdt.setText("");
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            userDataViewModel.getNewChatRoom(authViewModel.getCurrentUser().getEmail(),email);
+                            userDataViewModel.getRoomMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+                                @Override
+                                public void onChanged(String s) {
+                                    room = s;
+                                    newChat = false;
+                                    mSocket.emit("joinRoom",room);
+                                }
+                            });
+                        }
+                    },2000);
+                }
+                else {
+                    mSocket.emit("chat message", authViewModel.getCurrentUser().getEmail(), email, chatBinding.sendEdt.getText().toString(), room);
+                    ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
+                    chatModelListGlobal.add(chatModel);
+                    chatAdapter.setChatModelList(chatModelListGlobal);
+                    chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
+                    scrollToBottom();
+                    chatBinding.sendEdt.setText("");
+                }
             }
         });
 
@@ -139,7 +174,9 @@ public class ChatFragment extends Fragment {
 
                 if (!mTyping) {
                     mTyping = true;
-                    mSocket.emit("typing",room);
+                    if(room!=null) {
+                        mSocket.emit("typing", room);
+                    }
                 }
 
                 mTypingHandler.removeCallbacks(onTypingTimeout);
@@ -214,39 +251,55 @@ public class ChatFragment extends Fragment {
         }
     };
 
-    private Emitter.Listener onTyping = new Emitter.Listener() {
+    private Emitter.Listener onNewChat = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
             requireActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if(args.length>0 && args[0] instanceof JSONObject){
-                        JSONObject data = (JSONObject) args[0];
-                        addTyping();
-                    }
-                    else {
-                        Log.e("SocketIO", "Received data is not a JSONObject");
+                    if(args.length>0 && args[0] instanceof JSONObject ){
+
                     }
                 }
             });
         }
     };
 
+    private Emitter.Listener onTyping = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if (isAdded() && requireActivity() != null) {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (args.length > 0 && args[0] instanceof JSONObject) {
+                            JSONObject data = (JSONObject) args[0];
+                            addTyping();
+                        } else {
+                            Log.e("SocketIO", "Received data is not a JSONObject");
+                        }
+                    }
+                });
+            }
+        }
+    };
+
     private Emitter.Listener onStopTyping = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            requireActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(args.length>0 && args[0] instanceof JSONObject){
-                        JSONObject data = (JSONObject) args[0];
-                        removeTyping();
+            if (isAdded() && requireActivity() != null) {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (args.length > 0 && args[0] instanceof JSONObject) {
+                            JSONObject data = (JSONObject) args[0];
+                            removeTyping();
+                        } else {
+                            Log.e("SocketIO", "Received data is not a JSONObject");
+                        }
                     }
-                    else {
-                        Log.e("SocketIO", "Received data is not a JSONObject");
-                    }
-                }
-            });
+                });
+            }
         }
     };
 
@@ -280,7 +333,9 @@ public class ChatFragment extends Fragment {
             if (!mTyping) return;
 
             mTyping = false;
-            mSocket.emit("stop typing",room);
+            if(room!=null) {
+                mSocket.emit("stop typing", room);
+            }
         }
     };
 }

@@ -127,6 +127,24 @@ public class UsersRepository {
         });
     }
 
+    public void getRoomForNew(String email,String user){
+        executorService.execute(()->{
+            db.collection("users").document(email).collection("userFriends").whereEqualTo("userId",user).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        if (task.getResult()!=null){
+                            DocumentSnapshot documentSnapshot = task.getResult().getDocuments().get(0);
+                            if(firebaseComplte!=null){
+                                firebaseComplte.onNewChatRoom(documentSnapshot.getString("room"));
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
     public void setUserName(String name, String email){
         executorService.execute(()->{
 //            Map<String,Object> map = new HashMap<>();
@@ -212,5 +230,6 @@ public class UsersRepository {
         void onGetFriewnds(List<UserFriendsModel> userFriendsModelList);
         void onFriendsDetails(List<UserDetailModel> userDetailModelList);
         void onUpdated(Boolean isComplete);
+        void onNewChatRoom(String room);
     }
 }
