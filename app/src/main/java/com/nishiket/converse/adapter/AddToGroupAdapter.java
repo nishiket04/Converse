@@ -21,14 +21,9 @@ public class AddToGroupAdapter extends RecyclerView.Adapter<AddToGroupAdapter.vi
     private List<UserDetailModel> userChatModelList = new ArrayList<>();
     private ArrayList<String> selectedUsers = new ArrayList<>();
     private AddToGroupLayoutBinding binding;
-    private GetGroupUsers getGroupUsers;
 
     public ArrayList<String> getSelectedUsers() {
         return selectedUsers;
-    }
-
-    public void setGetGroupUsers(GetGroupUsers getGroupUsers) {
-        this.getGroupUsers = getGroupUsers;
     }
 
     public void setUserChatModelList(List<UserDetailModel> userChatModelList) {
@@ -80,7 +75,4 @@ public class AddToGroupAdapter extends RecyclerView.Adapter<AddToGroupAdapter.vi
         }
     }
 
-    public interface GetGroupUsers{
-        void onClick(List<String> id);
-    }
 }
