@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.nishiket.converse.R;
 import com.nishiket.converse.adapter.UserChatAdapter;
 import com.nishiket.converse.databinding.FragmentHomeBinding;
@@ -55,6 +56,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
 
         try{ // don't know why but this method is invoking when we are in LoginSignUpActivity.. so i put it in a try catch block, also invoking from onbaring when we try to go to LoginSignupActivity
             userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
+            FirebaseMessaging.getInstance().subscribeToTopic(authViewModel.getCurrentUser().getEmail());
         }catch (Exception e){
             Log.d("data", "onViewCreated: "+e.toString());
         }

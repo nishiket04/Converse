@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.nishiket.converse.ChatApplication;
 import com.nishiket.converse.R;
 import com.nishiket.converse.databinding.ActivityMainBinding;
@@ -51,49 +52,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         ChatApplication app = (ChatApplication) getApplication();
         mSocket = app.getSocket();
         mSocket.on(Socket.EVENT_CONNECT, args -> Log.d("SocketIO", "Connected"));
         mSocket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.d("SocketIO", "Connection Error: " + args[0]));
         mSocket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketIO", "Disconnected"));
         mSocket.connect();
-        mSocket.on("chat message", onNewMessage);
-        mSocket.on(Socket.EVENT_CONNECT, args -> {
-            Log.d("SocketIO", "Connected");
-            JSONObject messageObject = new JSONObject();
-            try {
-                messageObject.put("message", "Hello");
-//                Log.d("SocketIO", "Emitting message: " + messageObject.toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-                Log.e("SocketIO", "Failed to create JSON object: " + e.getMessage());
-            }
-        });
-//        mSocket.emit("chat message", "nishiket04@gmail.com","abc04@gmail.com","45","ZZJvPQhpVcYa3mAtfe3c");
-
     }
-    private Emitter.Listener onNewMessage = new Emitter.Listener() {
-        @Override
-        public void call(final Object... args) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args.length > 0 && args[0] instanceof JSONObject) {
-                        JSONObject data = (JSONObject) args[0];
-                        String message;
-                        try {
-                            message = data.getString("message");
-                            Log.d("SocketIO", "Received message: " + message);
-                            // Handle the message as needed
-                        } catch (JSONException e) {
-                            Log.e("SocketIO", "JSON parsing error: " + e.getMessage());
-                        }
-                    } else {
-                        Log.e("SocketIO", "Received data is not a JSONObject");
-                    }
-                }
-            });
-        }
-    };
 }
