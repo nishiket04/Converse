@@ -82,7 +82,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
                                 public void onChanged(List<UserDetailModel> userDetailModelList) {
                                     userDetailModelListGlobal.addAll(userDetailModelList);
                                     userChatAdapter.setChatModelList(userDetailModelListGlobal);
-                                    userChatAdapter.notifyDataSetChanged();
+                                    userChatAdapter.notifyItemRangeInserted(userDetailModelListGlobal.size()-userDetailModelList.size()-1,userDetailModelListGlobal.size()-1);
                                 }
                             });
                         }
