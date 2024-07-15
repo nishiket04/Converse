@@ -25,10 +25,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.nishiket.converse.R;
+import com.nishiket.converse.TopicUtils;
 import com.nishiket.converse.databinding.FragmentSettingBinding;
 import com.nishiket.converse.model.UserDetailModel;
 import com.nishiket.converse.view.login.LoginSignupActivity;
@@ -81,6 +83,7 @@ public class SettingFragment extends Fragment {
                 authViewModel.signOut();
                 Intent intent = new Intent(getActivity(), LoginSignupActivity.class);
                 intent.putExtra("signin",true);
+                FirebaseMessaging.getInstance().unsubscribeFromTopic(TopicUtils.sanitizeTopicName(authViewModel.getCurrentUser().getEmail()));
                 startActivity(intent);
                 getActivity().finish();
             }
