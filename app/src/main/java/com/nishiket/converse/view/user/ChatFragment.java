@@ -153,7 +153,13 @@ public class ChatFragment extends Fragment {
     }
 
     private void scrollToBottom() {
-        chatBinding.chats.scrollToPosition(chatModelListGlobal.size()-1);
+//        chatBinding.chats.smoothScrollToPosition(chatAdapter.getItemCount()-1);
+        chatBinding.chats.post(new Runnable() {
+            @Override
+            public void run() {
+                chatBinding.nestedScrollView.scrollTo(0,chatBinding.nestedScrollView.getChildAt(0).getBottom());
+            }
+        });
     }
 
     private void addTyping() {
