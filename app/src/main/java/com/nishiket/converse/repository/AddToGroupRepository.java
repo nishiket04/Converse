@@ -115,6 +115,11 @@ public class AddToGroupRepository {
                     if(task.isSuccessful()){
                         if(task.getResult()!=null){
                             List<UserDetailModel> groupModelsList = task.getResult().toObjects(UserDetailModel.class);
+                            for (UserDetailModel model:
+                                 groupModelsList) {
+                                model.setGroup(true);
+                                model.setRoom(model.getDocumentId());
+                            }
                             if(onFirebaseComplete!=null){
                                 onFirebaseComplete.onGetGroup(groupModelsList);
                                 Log.d("grp", "onComplete: "+groupModelsList.size());

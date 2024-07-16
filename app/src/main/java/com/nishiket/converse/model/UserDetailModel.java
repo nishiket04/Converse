@@ -15,7 +15,16 @@ public class UserDetailModel {
     @PropertyName("room")
     private String room;
 
+    private boolean isGroup;
     private boolean isChecked;
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
+    }
 
     public boolean isChecked() {
         return isChecked;
