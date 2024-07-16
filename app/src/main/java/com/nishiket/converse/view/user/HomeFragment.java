@@ -72,6 +72,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
         userDataViewModel.getUserFriendsMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserFriendsModel>>() {
             @Override
             public void onChanged(List<UserFriendsModel> userFriendsModelList) {
+                    userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
                     userDetailModelListGlobal.clear();
                     userDataViewModel.getFriendsDetails(userFriendsModelList);
                     userDataViewModel.getUserFriendsDetailsMutableLiveDara().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
@@ -121,19 +122,19 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
         });
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
-        userDetailModelListGlobal.clear();
-    }
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
+//        userDetailModelListGlobal.clear();
+//    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
-        userDetailModelListGlobal.clear();
-    }
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
+//        userDetailModelListGlobal.clear();
+//    }
 
     @Override
     public void onCliced(int i, UserDetailModel userDetailModel) {
