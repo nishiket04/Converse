@@ -80,9 +80,11 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
                             addToGroupViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
                                 @Override
                                 public void onChanged(List<UserDetailModel> userDetailModelList) {
-                                    userDetailModelListGlobal.addAll(userDetailModelList);
-                                    userChatAdapter.setChatModelList(userDetailModelListGlobal);
-                                    userChatAdapter.notifyItemRangeInserted(userDetailModelListGlobal.size()-userDetailModelList.size()-1,userDetailModelListGlobal.size()-1);
+                                    if(!userDetailModelListGlobal.containsAll(userDetailModelList)) {
+                                        userDetailModelListGlobal.addAll(userDetailModelList);
+                                        userChatAdapter.setChatModelList(userDetailModelListGlobal);
+                                        userChatAdapter.notifyItemRangeInserted(userDetailModelListGlobal.size() - userDetailModelList.size() - 1, userDetailModelListGlobal.size() - 1);
+                                    }
                                 }
                             });
                         }
