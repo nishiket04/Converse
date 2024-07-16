@@ -1,13 +1,17 @@
 package com.nishiket.converse.view.user;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -34,6 +38,7 @@ import com.nishiket.converse.TopicUtils;
 import com.nishiket.converse.databinding.FragmentSettingBinding;
 import com.nishiket.converse.model.UserDetailModel;
 import com.nishiket.converse.view.login.LoginSignupActivity;
+import com.nishiket.converse.view.onboarding.OnBoardingActivity;
 import com.nishiket.converse.viewmodel.AuthViewModel;
 import com.nishiket.converse.viewmodel.UserDataViewModel;
 
@@ -49,6 +54,7 @@ public class SettingFragment extends Fragment {
     private final ExecutorService executorService = Executors.newFixedThreadPool(5);
     FirebaseStorage storage = FirebaseStorage.getInstance();
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -148,7 +154,19 @@ public class SettingFragment extends Fragment {
         chooseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openGallery();
+                if (ContextCompat.checkSelfPermission(getActivity(),
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+                    // Permission is not granted
+                    // Request the permission
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+                }
+                else {
+                    openGallery();
+                }
             }
         });
 
@@ -209,5 +227,20 @@ public class SettingFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         executorService.shutdown();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Check if request code matches our request
+        if (requestCode == REQUEST_PERMISSION_READ_EXTERNAL_STORAGE) {
+            // Check if the permission has been granted
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
