@@ -431,11 +431,6 @@ public class ChatFragment extends Fragment {
         dialog.show();
     }
 
-    private void loadUserData(UserDetailModel userDetailModel) {
-        chatBinding.userName.setText(userDetailModel.getName());
-        Glide.with(getContext()).load(userDetailModel.getUserImage()).error(R.drawable.user_image).into(chatBinding.userImgae);
-
-    }
 
     private void openGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
