@@ -73,6 +73,12 @@ public class AddGroupFragment extends Fragment {
             }
         });
 
+        addGroupBinding.back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Navigation.findNavController(view).popBackStack();
+            }
+        });
 
         addGroupBinding.create.setOnClickListener(new View.OnClickListener() {
             @Override
