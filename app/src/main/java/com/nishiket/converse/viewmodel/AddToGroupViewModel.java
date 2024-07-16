@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
+import com.nishiket.converse.model.ChatModel;
 import com.nishiket.converse.model.UserDetailModel;
 import com.nishiket.converse.repository.AddToGroupRepository;
 
@@ -18,6 +19,11 @@ public class AddToGroupViewModel extends AndroidViewModel implements AddToGroupR
     private MutableLiveData<String> groupId = new MutableLiveData<>();
     private MutableLiveData<Boolean> booleanMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<UserDetailModel>> mutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<ChatModel>> chatMutableLiveData = new MutableLiveData<>();
+
+    public MutableLiveData<List<ChatModel>> getChatMutableLiveData() {
+        return chatMutableLiveData;
+    }
 
     public MutableLiveData<List<UserDetailModel>> getMutableLiveData() {
         return mutableLiveData;
@@ -44,6 +50,10 @@ public class AddToGroupViewModel extends AndroidViewModel implements AddToGroupR
         addToGroupRepository.addImage(uri, room);
     }
 
+    public void getChat(String room,String email){
+        addToGroupRepository.getChats(room, email);
+    }
+
     @Override
     public void onCreatedGroup(String id) {
         groupId.setValue(id);
@@ -61,5 +71,10 @@ public class AddToGroupViewModel extends AndroidViewModel implements AddToGroupR
     @Override
     public void onGetGroup(List<UserDetailModel> userDetailModelList) {
         mutableLiveData.setValue(userDetailModelList);
+    }
+
+    @Override
+    public void onGetChat(List<ChatModel> chatModelList) {
+        chatMutableLiveData.setValue(chatModelList);
     }
 }

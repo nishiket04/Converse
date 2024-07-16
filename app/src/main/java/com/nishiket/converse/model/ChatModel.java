@@ -80,6 +80,15 @@ public class ChatModel {
         Log.d("data", "determineType: "+type);
     }
 
+    public void determineGroupType(String email) {
+        if (this.from.equals(email)) {
+            this.type = 1;
+        } else {
+            this.type = 0;
+        }
+        Log.d("data", "determineType: "+type);
+    }
+
     public String getFormattedTime() {
         if (time != null) {
             Date date = time.toDate();

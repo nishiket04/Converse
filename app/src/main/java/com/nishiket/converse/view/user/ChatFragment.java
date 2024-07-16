@@ -128,7 +128,12 @@ public class ChatFragment extends Fragment {
         ChatsViewModel chatsViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(ChatsViewModel.class);
         chatAdapter = new ChatAdapter(getActivity());
         if (room != null) {
-            chatsViewModel.getChats(room, authViewModel.getCurrentUser().getEmail());
+            if(!isGroup) {
+                chatsViewModel.getChats(room, authViewModel.getCurrentUser().getEmail());
+            }
+            else {
+                addToGroupViewModel.getChat(room,authViewModel.getCurrentUser().getEmail());
+            }
         }
         chatsViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
             @Override
@@ -142,6 +147,20 @@ public class ChatFragment extends Fragment {
 //                mSocket.emit("chat message", "nishiket04@gmail.com","abc04@gmail.com","This is Test Messesage","ZZJvPQhpVcYa3mAtfe3c");
             }
         });
+
+        if(isGroup) {
+            addToGroupViewModel.getChatMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<ChatModel>>() {
+                @Override
+                public void onChanged(List<ChatModel> chatModelList) {
+                    chatModelListGlobal = chatModelList;
+                    chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                    chatBinding.chats.setAdapter(chatAdapter);
+                    chatAdapter.setChatModelList(chatModelListGlobal);
+                    chatAdapter.notifyDataSetChanged();
+                    scrollToBottom();
+                }
+            });
+        }
 
         chatBinding.addImage.setOnClickListener(new View.OnClickListener() {
             @Override

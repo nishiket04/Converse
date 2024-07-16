@@ -16,6 +16,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nishiket.converse.model.ChatModel;
 import com.nishiket.converse.model.UserDetailModel;
 
 import java.util.ArrayList;
@@ -131,9 +132,32 @@ public class AddToGroupRepository {
         });
     }
 
+    public void getChats(String room,String email){
+        executorService.execute(()->{
+            db.collection("groupChat").document(room).collection("chats").orderBy("time").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        if(task.getResult()!=null){
+                            List<ChatModel> chatModelList = task.getResult().toObjects(ChatModel.class);
+                            for (ChatModel model :
+                                    chatModelList) {
+                                model.determineGroupType(email);
+                            }
+                            if(onFirebaseComplete!=null){
+                                onFirebaseComplete.onGetChat(chatModelList);
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
     public interface onFirebaseComplete{
         void onCreatedGroup(String id);
         void onUpdated(Boolean isComplete);
         void onGetGroup(List<UserDetailModel> userDetailModelList);
+        void onGetChat(List<ChatModel> chatModelList);
     }
 }
