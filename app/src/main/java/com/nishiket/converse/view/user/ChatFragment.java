@@ -92,6 +92,7 @@ public class ChatFragment extends Fragment {
         mSocket.on("typing", onTyping);
         mSocket.on("stop typing", onStopTyping);
         mSocket.on("new chat", onNewChat);
+        mSocket.on("group message", onGroupMessage);
 
         executorService.execute(() -> {
             Bundle arguments = getArguments();
@@ -196,6 +197,14 @@ public class ChatFragment extends Fragment {
                             });
                         }
                     }, 2000);
+                } else if (isGroup) {
+                    mSocket.emit("group message", authViewModel.getCurrentUser().getEmail(), chatBinding.sendEdt.getText().toString(), room);
+                    ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(),email);
+                    chatModelListGlobal.add(chatModel);
+                    chatAdapter.setChatModelList(chatModelListGlobal);
+                    chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
+                    scrollToBottom();
+                    chatBinding.sendEdt.setText("");
                 } else {
                     mSocket.emit("chat message", authViewModel.getCurrentUser().getEmail(), email, chatBinding.sendEdt.getText().toString(), room);
                     ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
@@ -260,14 +269,25 @@ public class ChatFragment extends Fragment {
     }
 
     private ChatModel addToList(String message, String from, String to) {
-        ChatModel chatModel = new ChatModel();
-        chatModel.setMsg(message);
-        chatModel.setFrom(from);
-        chatModel.setTo(to);
-        Timestamp timestamp = Timestamp.now();
-        chatModel.setTime(timestamp);
-        chatModel.determineType(authViewModel.getCurrentUser().getEmail());
-        return chatModel;
+        if(!isGroup) {
+            ChatModel chatModel = new ChatModel();
+            chatModel.setMsg(message);
+            chatModel.setFrom(from);
+            chatModel.setTo(to);
+            Timestamp timestamp = Timestamp.now();
+            chatModel.setTime(timestamp);
+            chatModel.determineType(authViewModel.getCurrentUser().getEmail());
+            return chatModel;
+        }
+        else {
+            ChatModel chatModel = new ChatModel();
+            chatModel.setMsg(message);
+            chatModel.setFrom(from);
+            Timestamp timestamp = Timestamp.now();
+            chatModel.setTime(timestamp);
+            chatModel.determineGroupType(authViewModel.getCurrentUser().getEmail());
+            return chatModel;
+        }
     }
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
@@ -314,6 +334,39 @@ public class ChatFragment extends Fragment {
                     }
                 }
             });
+        }
+    };
+
+    private Emitter.Listener onGroupMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            if(isAdded() && requireActivity() != null) {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (args.length > 0 && args[0] instanceof JSONObject) {
+                            JSONObject data = (JSONObject) args[0];
+                            String message;
+                            String from;
+                            try {
+                                message = data.getString("message");
+                                from = data.getString("from");
+                                ChatModel chatModel = addToList(message, from, "");
+                                chatModelListGlobal.add(chatModel);
+                                chatAdapter.setChatModelList(chatModelListGlobal);
+                                chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
+                                scrollToBottom();
+                                Log.d("SocketIO", "Received message: " + message + "  " + data.getString("from"));
+                                // Handle the message as needed
+                            } catch (JSONException e) {
+                                Log.e("SocketIO", "JSON parsing error: " + e.getMessage());
+                            }
+                        } else {
+                            Log.e("SocketIO", "Received data is not a JSONObject");
+                        }
+                    }
+                });
+            }
         }
     };
 
