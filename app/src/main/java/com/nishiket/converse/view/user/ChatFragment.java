@@ -305,47 +305,51 @@ public class ChatFragment extends Fragment {
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            requireActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args.length > 0 && args[0] instanceof JSONObject) {
-                        JSONObject data = (JSONObject) args[0];
-                        String message;
-                        String from;
-                        String to;
-                        try {
-                            message = data.getString("message");
-                            from = data.getString("from");
-                            to = data.getString("to");
-                            ChatModel chatModel = addToList(message, from, to);
-                            chatModelListGlobal.add(chatModel);
-                            chatAdapter.setChatModelList(chatModelListGlobal);
-                            chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
-                            scrollToBottom();
-                            Log.d("SocketIO", "Received message: " + message + "  " + data.getString("from"));
-                            // Handle the message as needed
-                        } catch (JSONException e) {
-                            Log.e("SocketIO", "JSON parsing error: " + e.getMessage());
+            if (isAdded() && requireActivity()!=null) {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (args.length > 0 && args[0] instanceof JSONObject) {
+                            JSONObject data = (JSONObject) args[0];
+                            String message;
+                            String from;
+                            String to;
+                            try {
+                                message = data.getString("message");
+                                from = data.getString("from");
+                                to = data.getString("to");
+                                ChatModel chatModel = addToList(message, from, to);
+                                chatModelListGlobal.add(chatModel);
+                                chatAdapter.setChatModelList(chatModelListGlobal);
+                                chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
+                                scrollToBottom();
+                                Log.d("SocketIO", "Received message: " + message + "  " + data.getString("from"));
+                                // Handle the message as needed
+                            } catch (JSONException e) {
+                                Log.e("SocketIO", "JSON parsing error: " + e.getMessage());
+                            }
+                        } else {
+                            Log.e("SocketIO", "Received data is not a JSONObject");
                         }
-                    } else {
-                        Log.e("SocketIO", "Received data is not a JSONObject");
                     }
-                }
-            });
+                });
+            }
         }
     };
 
     private Emitter.Listener onNewChat = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
-            requireActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (args.length > 0 && args[0] instanceof JSONObject) {
+            if(isAdded() && requireActivity()!=null) {
+                requireActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (args.length > 0 && args[0] instanceof JSONObject) {
 
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     };
 
