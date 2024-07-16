@@ -70,6 +70,7 @@ public class ChatFragment extends Fragment {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private String room;
     private String email;
+    private String status;
     private Handler mTypingHandler = new Handler();
     private boolean mTyping = false;
     private ChatAdapter chatAdapter;
@@ -110,6 +111,7 @@ public class ChatFragment extends Fragment {
                 email = arguments.getString("email");
                 String image = arguments.getString("image");
                 room = arguments.getString("room", null);
+                status = arguments.getString("status", "Offline");
                 newChat = arguments.getBoolean("new", false);
                 isGroup = arguments.getBoolean("isGroup", false);
                 if (room != null) {
@@ -121,6 +123,7 @@ public class ChatFragment extends Fragment {
                 }
                 requireActivity().runOnUiThread(() -> {
                     chatBinding.userName.setText(name);
+                    chatBinding.userStatus.setText(status);
                     Glide.with(getContext()).load(image).error(R.drawable.user_image).into(chatBinding.userImgae);
 
                 });
@@ -280,7 +283,7 @@ public class ChatFragment extends Fragment {
 
     private void removeTyping() {
         if(!isGroup)
-            chatBinding.userStatus.setText("Online");
+            chatBinding.userStatus.setText(status);
         else
             chatBinding.userStatus.setText("");
     }

@@ -52,6 +52,8 @@ public class AuthRepository {
                         if(task.isSuccessful()){
                             Map<String, Object> user = new HashMap<>();
                             user.put("name", name);
+                            user.put("status","Offline");
+                            user.put("userImage","https://firebasestorage.googleapis.com/v0/b/converse-1e750.appspot.com/o/user_image.png?alt=media&token=38dc726d-2766-45de-9af7-baf99d5cb324");
                             db.collection("users").document(email).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {

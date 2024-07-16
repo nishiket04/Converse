@@ -122,6 +122,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
             bundle.putString("image",userDetailModel.getUserImage());
             bundle.putString("room",userDetailModel.getRoom());
             bundle.putBoolean("isGroup",userDetailModel.isGroup());
+            bundle.putString("status",userDetailModel.getStatus());
             requireActivity().runOnUiThread(()->{
                 Navigation.findNavController(fragmentHomeBinding.getRoot()).navigate(R.id.action_homeFragment_to_chatFragment,bundle);
             });

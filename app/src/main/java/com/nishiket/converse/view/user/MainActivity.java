@@ -16,11 +16,13 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.nishiket.converse.ChatApplication;
 import com.nishiket.converse.R;
 import com.nishiket.converse.databinding.ActivityMainBinding;
+import com.nishiket.converse.viewmodel.AuthViewModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightStatusBars(false); // White font color on status bar
             windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
         }
+        AuthViewModel authViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(AuthViewModel.class);
 
 
 
@@ -58,5 +61,6 @@ public class MainActivity extends AppCompatActivity {
         mSocket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.d("SocketIO", "Connection Error: " + args[0]));
         mSocket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketIO", "Disconnected"));
         mSocket.connect();
+        mSocket.emit("join",authViewModel.getCurrentUser().getEmail());
     }
 }

@@ -14,6 +14,8 @@ public class UserDetailModel {
     private String lastMessage;
     @PropertyName("room")
     private String room;
+    @PropertyName("status")
+    private String status;
 
     private boolean isGroup;
     private boolean isChecked;
@@ -74,5 +76,13 @@ public class UserDetailModel {
 
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

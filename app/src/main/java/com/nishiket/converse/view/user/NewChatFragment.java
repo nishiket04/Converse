@@ -81,6 +81,7 @@ public class NewChatFragment extends Fragment implements UserChatAdapter.onClick
         bundle.putString("email",userDetailModel.getDocumentId());
         bundle.putString("image",userDetailModel.getUserImage());
         bundle.putBoolean("new",true);
+        bundle.putString("status",userDetailModel.getStatus());
         Navigation.findNavController(newChatBinding.getRoot()).navigate(R.id.action_newChatFragment_to_chatFragment,bundle);
     }
 }
