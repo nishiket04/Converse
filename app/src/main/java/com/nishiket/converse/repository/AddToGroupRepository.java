@@ -42,6 +42,7 @@ public class AddToGroupRepository {
         Map<String,Object> list = new HashMap<>();
         list.put("users",users);
         list.put("name",name);
+        list.put("userImage","https://firebasestorage.googleapis.com/v0/b/converse-1e750.appspot.com/o/user_image.png?alt=media&token=38dc726d-2766-45de-9af7-baf99d5cb324");
         executorService.execute(()->{
             db.collection("groupChat").add(list).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                 @Override

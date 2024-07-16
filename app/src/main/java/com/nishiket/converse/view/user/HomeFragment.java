@@ -32,7 +32,9 @@ import com.nishiket.converse.viewmodel.AuthViewModel;
 import com.nishiket.converse.viewmodel.UserDataViewModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -70,6 +72,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
         userDataViewModel.getUserFriendsMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserFriendsModel>>() {
             @Override
             public void onChanged(List<UserFriendsModel> userFriendsModelList) {
+                    userDetailModelListGlobal.clear();
                     userDataViewModel.getFriendsDetails(userFriendsModelList);
                     userDataViewModel.getUserFriendsDetailsMutableLiveDara().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
                         @Override
@@ -77,12 +80,17 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
                             userDetailModelListGlobal = userDetailModelList;
                             userChatAdapter.setChatModelList(userDetailModelListGlobal);
                             userChatAdapter.notifyDataSetChanged();
+//                            Log.d("data1", "onChanged1: "+userDetailModelListGlobal.get(0).getName());
                             addToGroupViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
                                 @Override
                                 public void onChanged(List<UserDetailModel> userDetailModelList) {
                                     if(!userDetailModelListGlobal.containsAll(userDetailModelList)) {
                                         userDetailModelListGlobal.addAll(userDetailModelList);
                                         userChatAdapter.setChatModelList(userDetailModelListGlobal);
+//                                        userChatAdapter.notifyDataSetChanged();
+                                        Log.d("data1", "onChanged2: "+userDetailModelListGlobal.get(0).getName());
+                                        Log.d("data1", "onChanged3: "+userDetailModelList.get(0).getName());
+                                        userChatAdapter.notifyItemChanged(0,userDetailModelListGlobal.get(0));
                                         userChatAdapter.notifyItemRangeInserted(userDetailModelListGlobal.size() - userDetailModelList.size() - 1, userDetailModelListGlobal.size() - 1);
                                     }
                                 }
@@ -111,6 +119,20 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
+        userDetailModelListGlobal.clear();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
+        userDetailModelListGlobal.clear();
     }
 
     @Override
