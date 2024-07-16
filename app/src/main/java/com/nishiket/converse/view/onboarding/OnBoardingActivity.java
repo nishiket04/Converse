@@ -46,7 +46,7 @@ public class OnBoardingActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
-        } else {
+        }
             Intent i = new Intent(this, LoginSignupActivity.class);
             SharedPreferences data = getSharedPreferences("data", MODE_PRIVATE);
             boolean second = data.getBoolean("second", false);
@@ -66,7 +66,6 @@ public class OnBoardingActivity extends AppCompatActivity {
                     finish();
                 }
             });
-        }
     }
 
     @Override
