@@ -11,6 +11,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +19,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.nishiket.converse.R;
@@ -65,6 +67,17 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
         }catch (Exception e){
             Log.d("data", "onViewCreated: "+e.toString());
         }
+
+        fragmentHomeBinding.refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
+                addToGroupViewModel.getGroups(authViewModel.getCurrentUser().getEmail());
+                Toast.makeText(getActivity(), "Refreshed", Toast.LENGTH_SHORT).show();
+                fragmentHomeBinding.refreshLayout.setRefreshing(false);
+            }
+        });
+
         UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
         fragmentHomeBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         fragmentHomeBinding.chats.setAdapter(userChatAdapter);
@@ -74,6 +87,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
             public void onChanged(List<UserFriendsModel> userFriendsModelList) {
                     userDetailModelListGlobal.removeAll(userDetailModelListGlobal);
                     userDetailModelListGlobal.clear();
+                    userChatAdapter.notifyDataSetChanged();
                     userDataViewModel.getFriendsDetails(userFriendsModelList);
                     userDataViewModel.getUserFriendsDetailsMutableLiveDara().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
                         @Override
@@ -88,11 +102,11 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
                                     if(!userDetailModelListGlobal.containsAll(userDetailModelList)) {
                                         userDetailModelListGlobal.addAll(userDetailModelList);
                                         userChatAdapter.setChatModelList(userDetailModelListGlobal);
-//                                        userChatAdapter.notifyDataSetChanged();
+                                        userChatAdapter.notifyDataSetChanged();
                                         Log.d("data1", "onChanged2: "+userDetailModelListGlobal.get(0).getName());
                                         Log.d("data1", "onChanged3: "+userDetailModelList.get(0).getName());
                                         userChatAdapter.notifyItemChanged(0,userDetailModelListGlobal.get(0));
-                                        userChatAdapter.notifyItemRangeInserted(userDetailModelListGlobal.size() - userDetailModelList.size() - 1, userDetailModelListGlobal.size() - 1);
+//                                        userChatAdapter.notifyItemRangeInserted(userDetailModelListGlobal.size() - userDetailModelList.size() - 1, userDetailModelListGlobal.size() - 1);
                                     }
                                 }
                             });
