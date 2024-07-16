@@ -107,6 +107,7 @@ public class ChatFragment extends Fragment {
                 }
                 if (isGroup) {
                     chatBinding.addImage.setVisibility(View.VISIBLE);
+                    chatBinding.userStatus.setText("");
                 }
                 requireActivity().runOnUiThread(() -> {
                     chatBinding.userName.setText(name);
@@ -245,11 +246,17 @@ public class ChatFragment extends Fragment {
     }
 
     private void addTyping() {
-        chatBinding.userStatus.setText("Typing...");
+        if(!isGroup)
+            chatBinding.userStatus.setText("Typing...");
+        else
+            chatBinding.userStatus.setText("Someone is Typing...");
     }
 
     private void removeTyping() {
-        chatBinding.userStatus.setText("Online");
+        if(!isGroup)
+            chatBinding.userStatus.setText("Online");
+        else
+            chatBinding.userStatus.setText("");
     }
 
     private ChatModel addToList(String message, String from, String to) {
