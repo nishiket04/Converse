@@ -33,6 +33,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.nishiket.converse.ChatApplication;
 import com.nishiket.converse.R;
 import com.nishiket.converse.TopicUtils;
 import com.nishiket.converse.databinding.FragmentSettingBinding;
@@ -46,6 +47,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import io.socket.client.Socket;
+
 public class SettingFragment extends Fragment {
 
     private FragmentSettingBinding settingBinding;
@@ -55,6 +58,7 @@ public class SettingFragment extends Fragment {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_PERMISSION_READ_EXTERNAL_STORAGE = 1;
+    private Socket mSocket;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,6 +73,8 @@ public class SettingFragment extends Fragment {
         AuthViewModel authViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AuthViewModel.class);
         UserDataViewModel userDataViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(UserDataViewModel.class);
         userDataViewModel.getUserDetail(authViewModel.getCurrentUser().getEmail());
+        ChatApplication app = (ChatApplication) getActivity().getApplication();
+        mSocket = app.getSocket();
 
         userDataViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
             @Override
@@ -87,6 +93,7 @@ public class SettingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 authViewModel.signOut();
+                mSocket.disconnect();
                 Intent intent = new Intent(getActivity(), LoginSignupActivity.class);
                 intent.putExtra("signin",true);
                 FirebaseMessaging.getInstance().unsubscribeFromTopic(TopicUtils.sanitizeTopicName(authViewModel.getCurrentUser().getEmail()));
