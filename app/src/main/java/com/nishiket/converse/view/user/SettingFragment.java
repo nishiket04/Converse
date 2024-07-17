@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -161,18 +162,48 @@ public class SettingFragment extends Fragment {
         chooseImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission.READ_MEDIA_IMAGES)
+                            != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)!=PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(),Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED) {
 
-                    // Permission is not granted
-                    // Request the permission
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
-                }
-                else {
-                    openGallery();
+                        // Permission is not granted
+                        // Request the permission
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,Manifest.permission.POST_NOTIFICATIONS},
+                                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+                    }
+                    else {
+                        openGallery();
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission.READ_MEDIA_IMAGES)
+                            != PackageManager.PERMISSION_GRANTED ) {
+
+                        // Permission is not granted
+                        // Request the permission
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+                    }
+                    else {
+                        openGallery();
+                    }
+                }else {
+                    if (ContextCompat.checkSelfPermission(getActivity(),
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+
+                        // Permission is not granted
+                        // Request the permission
+                        ActivityCompat.requestPermissions(getActivity(),
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                REQUEST_PERMISSION_READ_EXTERNAL_STORAGE);
+                    }
+                    else {
+                        openGallery();
+                    }
                 }
             }
         });
