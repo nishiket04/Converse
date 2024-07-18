@@ -289,7 +289,7 @@ public class ChatFragment extends Fragment {
 
     private void removeTyping() {
         if(!isGroup)
-            chatBinding.userStatus.setText(status);
+            chatBinding.userStatus.setText("Online");
         else
             chatBinding.userStatus.setText("");
     }
