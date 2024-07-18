@@ -44,6 +44,7 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
 
     private FragmentHomeBinding fragmentHomeBinding;
     private String room;
+    private boolean firstCall = true;
     private List<UserDetailModel> userDetailModelListGlobal = new ArrayList<>();
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     @Override
@@ -61,8 +62,11 @@ public class HomeFragment extends Fragment implements UserChatAdapter.onClickedI
         UserDataViewModel userDataViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(UserDataViewModel.class);
         AddToGroupViewModel addToGroupViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(AddToGroupViewModel.class);
         try{ // don't know why but this method is invoking when we are in LoginSignUpActivity.. so i put it in a try catch block, also invoking from onbaring when we try to go to LoginSignupActivity
-            userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
-            addToGroupViewModel.getGroups(authViewModel.getCurrentUser().getEmail());
+            if(firstCall) {
+                userDataViewModel.getUserFriends(authViewModel.getCurrentUser().getEmail());
+                addToGroupViewModel.getGroups(authViewModel.getCurrentUser().getEmail());
+                firstCall = false;
+            }
             FirebaseMessaging.getInstance().subscribeToTopic(TopicUtils.sanitizeTopicName(authViewModel.getCurrentUser().getEmail()));
         }catch (Exception e){
             Log.d("data", "onViewCreated: "+e.toString());
