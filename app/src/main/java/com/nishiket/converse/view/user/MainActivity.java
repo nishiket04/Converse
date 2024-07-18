@@ -33,6 +33,7 @@ import io.socket.emitter.Emitter;
 public class MainActivity extends AppCompatActivity {
     private Socket mSocket;
     private ActivityMainBinding binding;
+    private AuthViewModel authViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightStatusBars(false); // White font color on status bar
             windowInsetsController.setAppearanceLightNavigationBars(false); // set font color white
         }
-        AuthViewModel authViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(AuthViewModel.class);
+        authViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication())).get(AuthViewModel.class);
 
 
 
@@ -60,6 +61,25 @@ public class MainActivity extends AppCompatActivity {
         mSocket.on(Socket.EVENT_CONNECT, args -> Log.d("SocketIO", "Connected"));
         mSocket.on(Socket.EVENT_CONNECT_ERROR, args -> Log.d("SocketIO", "Connection Error: " + args[0]));
         mSocket.on(Socket.EVENT_DISCONNECT, args -> Log.d("SocketIO", "Disconnected"));
+        mSocket.connect();
+        mSocket.emit("join",authViewModel.getCurrentUser().getEmail());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mSocket.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
         mSocket.connect();
         mSocket.emit("join",authViewModel.getCurrentUser().getEmail());
     }
