@@ -201,44 +201,50 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (newChat) {
-                    mSocket.emit("new chat", authViewModel.getCurrentUser().getEmail(), email, chatBinding.sendEdt.getText().toString());
-                    ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
-                    chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-                    chatModelListGlobal.add(chatModel);
-                    chatBinding.chats.setAdapter(chatAdapter);
-                    chatAdapter.setChatModelList(chatModelListGlobal);
-                    chatAdapter.notifyDataSetChanged();
-                    chatBinding.sendEdt.setText("");
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            userDataViewModel.getNewChatRoom(authViewModel.getCurrentUser().getEmail(), email);
-                            userDataViewModel.getRoomMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
-                                @Override
-                                public void onChanged(String s) {
-                                    room = s;
-                                    newChat = false;
-                                    mSocket.emit("joinRoom", room);
-                                }
-                            });
-                        }
-                    }, 2000);
+                    if(!chatBinding.sendEdt.getText().toString().isEmpty()) {
+                        mSocket.emit("new chat", authViewModel.getCurrentUser().getEmail(), email, chatBinding.sendEdt.getText().toString());
+                        ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
+                        chatBinding.chats.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+                        chatModelListGlobal.add(chatModel);
+                        chatBinding.chats.setAdapter(chatAdapter);
+                        chatAdapter.setChatModelList(chatModelListGlobal);
+                        chatAdapter.notifyDataSetChanged();
+                        chatBinding.sendEdt.setText("");
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                userDataViewModel.getNewChatRoom(authViewModel.getCurrentUser().getEmail(), email);
+                                userDataViewModel.getRoomMutableLiveData().observe(getViewLifecycleOwner(), new Observer<String>() {
+                                    @Override
+                                    public void onChanged(String s) {
+                                        room = s;
+                                        newChat = false;
+                                        mSocket.emit("joinRoom", room);
+                                    }
+                                });
+                            }
+                        }, 2000);
+                    }
                 } else if (isGroup) {
-                    mSocket.emit("group message", authViewModel.getCurrentUser().getEmail(), chatBinding.sendEdt.getText().toString(), room);
-                    ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(),email);
-                    chatModelListGlobal.add(chatModel);
-                    chatAdapter.setChatModelList(chatModelListGlobal);
-                    chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
-                    scrollToBottom();
-                    chatBinding.sendEdt.setText("");
+                    if(!chatBinding.sendEdt.getText().toString().isEmpty()) {
+                        mSocket.emit("group message", authViewModel.getCurrentUser().getEmail(), chatBinding.sendEdt.getText().toString(), room);
+                        ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
+                        chatModelListGlobal.add(chatModel);
+                        chatAdapter.setChatModelList(chatModelListGlobal);
+                        chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
+                        scrollToBottom();
+                        chatBinding.sendEdt.setText("");
+                    }
                 } else {
-                    mSocket.emit("chat message", authViewModel.getCurrentUser().getEmail(), email, chatBinding.sendEdt.getText().toString(), room);
-                    ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
-                    chatModelListGlobal.add(chatModel);
-                    chatAdapter.setChatModelList(chatModelListGlobal);
-                    chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
-                    scrollToBottom();
-                    chatBinding.sendEdt.setText("");
+                    if(!chatBinding.sendEdt.getText().toString().isEmpty()) {
+                        mSocket.emit("chat message", authViewModel.getCurrentUser().getEmail(), email, chatBinding.sendEdt.getText().toString(), room);
+                        ChatModel chatModel = addToList(chatBinding.sendEdt.getText().toString(), authViewModel.getCurrentUser().getEmail(), email);
+                        chatModelListGlobal.add(chatModel);
+                        chatAdapter.setChatModelList(chatModelListGlobal);
+                        chatAdapter.notifyItemInserted(chatModelListGlobal.size() - 1);
+                        scrollToBottom();
+                        chatBinding.sendEdt.setText("");
+                    }
                 }
             }
         });
