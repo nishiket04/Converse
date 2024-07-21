@@ -84,21 +84,25 @@ public class AddGroupFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(!addGroupBinding.grpName.getText().toString().isEmpty()) {
-                    ArrayList<String> users = userChatAdapter.getSelectedUsers();
-                    users.add(authViewModel.getCurrentUser().getEmail());
-                    addToGroupViewModel.createGroup(users,addGroupBinding.grpName.getText().toString());
-                    addToGroupViewModel.getGroupId().observe(getViewLifecycleOwner(), new Observer<String>() {
-                        @Override
-                        public void onChanged(String s) {
-                            Bundle bundle = new Bundle();
-                            bundle.putStringArrayList("users",users);
-                            bundle.putString("name",addGroupBinding.grpName.getText().toString());
-                            bundle.putBoolean("isGroup",true);
-                            bundle.putString("room",s);
-                            Log.d("grp","users:"+userChatAdapter.getSelectedUsers().size()+ " " + userChatAdapter.getSelectedUsers().get(0));
-                            Navigation.findNavController(addGroupBinding.getRoot()).navigate(R.id.action_addGroupFragment_to_chatFragment,bundle);
-                        }
-                    });
+                    if(userChatAdapter.getSelectedUsers().isEmpty()) {
+                        Toast.makeText(getActivity().getApplication(), "Select Users", Toast.LENGTH_SHORT).show();
+                    }else {
+                        ArrayList<String> users = userChatAdapter.getSelectedUsers();
+                        users.add(authViewModel.getCurrentUser().getEmail());
+                        addToGroupViewModel.createGroup(users, addGroupBinding.grpName.getText().toString());
+                        addToGroupViewModel.getGroupId().observe(getViewLifecycleOwner(), new Observer<String>() {
+                            @Override
+                            public void onChanged(String s) {
+                                Bundle bundle = new Bundle();
+                                bundle.putStringArrayList("users", users);
+                                bundle.putString("name", addGroupBinding.grpName.getText().toString());
+                                bundle.putBoolean("isGroup", true);
+                                bundle.putString("room", s);
+                                Log.d("grp", "users:" + userChatAdapter.getSelectedUsers().size() + " " + userChatAdapter.getSelectedUsers().get(0));
+                                Navigation.findNavController(addGroupBinding.getRoot()).navigate(R.id.action_addGroupFragment_to_chatFragment, bundle);
+                            }
+                        });
+                    }
                 }else {
                     Toast.makeText(getActivity().getApplication(), "Enter Group Name", Toast.LENGTH_SHORT).show();
                 }
