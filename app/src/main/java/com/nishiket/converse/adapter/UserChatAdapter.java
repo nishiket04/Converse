@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
@@ -27,8 +29,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.viewHolder> {
+public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.viewHolder> implements Filterable {
     private List<UserDetailModel> userChatModelList = new ArrayList<>();
+    private List<UserDetailModel> userChatModelListFull = new ArrayList<>();
     private Context context;
     private onClickedItem onClickedItem;
     private UserChatUiBinding binding;
@@ -41,12 +44,19 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.viewHo
         this.onClickedItem = onClickedItem;
     }
 
+    @Override
+    public Filter getFilter() {
+        return onFilter;
+    }
+
     public interface onClickedItem{
         void onCliced(int i,UserDetailModel userDetailModel);
     }
 
     public void setChatModelList(List<UserDetailModel> userChatModelList) {
+//        this.userChatModelList = userChatModelList;
         this.userChatModelList = userChatModelList;
+        this.userChatModelListFull = new ArrayList<>(userChatModelList);
     }
 
     @NonNull
@@ -71,6 +81,36 @@ public class UserChatAdapter extends RecyclerView.Adapter<UserChatAdapter.viewHo
         });
 //        Glide.with(context).load(userChatModel.getUserImage()).into(binding.userImage);
     }
+
+    private Filter onFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            List<UserDetailModel> userFilter = new ArrayList<>();
+            if (charSequence == null || charSequence.length() == 0) {
+                userFilter.addAll(userChatModelListFull);
+            } else {
+                String filterPattern = charSequence.toString().toLowerCase().trim();
+
+                for (UserDetailModel item : userChatModelList) {
+                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                        userFilter.add(item);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = userFilter;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            userChatModelList.clear();
+            userChatModelList.addAll((List) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
 
     @Override
     public int getItemCount() {

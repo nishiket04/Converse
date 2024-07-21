@@ -11,6 +11,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,10 +48,10 @@ public class NewChatFragment extends Fragment implements UserChatAdapter.onClick
         NewChatAndGroupViewModel newChatAndGroupViewModel = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication())).get(NewChatAndGroupViewModel.class);
 
         newChatAndGroupViewModel.getUsers(authViewModel.getCurrentUser().getEmail());
+        UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
         newChatAndGroupViewModel.getMutableLiveData().observe(getViewLifecycleOwner(), new Observer<List<UserDetailModel>>() {
             @Override
             public void onChanged(List<UserDetailModel> userDetailModelList) {
-                UserChatAdapter userChatAdapter = new UserChatAdapter(getActivity());
                 newChatBinding.users.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
                 newChatBinding.users.setAdapter(userChatAdapter);
                 userChatAdapter.setChatModelList(userDetailModelList);
@@ -70,6 +72,23 @@ public class NewChatFragment extends Fragment implements UserChatAdapter.onClick
             @Override
             public void onClick(View view) {
                 Navigation.findNavController(view).navigate(R.id.action_newChatFragment_to_addGroupFragment);
+            }
+        });
+
+        newChatBinding.search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                userChatAdapter.getFilter().filter(charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
     }
